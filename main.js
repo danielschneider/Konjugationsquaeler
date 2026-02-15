@@ -2,7 +2,8 @@
 
 const { useState } = React;
 
-function App, setCount] = useState(0);
+function App(){
+    const [count, setCount] = useState(0);
 
     const handleClick = () => {
         setCount(count + 1);
@@ -31,4 +32,5 @@ function App, setCount] = useState(0);
     );
 }
 
-const root = ReactDOM.createRoot(document.(<App />);
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
