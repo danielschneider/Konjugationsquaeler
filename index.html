@@ -406,7 +406,7 @@
                     </div>
                 </div>
                 
-                <input type="text" class="input-field" id="mode2-input" placeholder="Type the conjugated form..." onkeypress="handleEnter(event)" autocomplete="off" autofocus>
+                <input type="text" class="input-field" id="mode2-input" placeholder="Type the form (macrons optional)..." onkeypress="handleEnter(event)" autocomplete="off" autofocus>
 
                 <div class="buttons">
                     <button class="ok-btn" onclick="checkMode2()">Check</button>
@@ -419,6 +419,21 @@
     </div>
 
     <script>
+        // Helper function to remove macrons for comparison
+        function removeMacrons(text) {
+            return text
+                .replace(/ā/g, 'a')
+                .replace(/ē/g, 'e')
+                .replace(/ī/g, 'i')
+                .replace(/ō/g, 'o')
+                .replace(/ū/g, 'u')
+                .replace(/Ā/g, 'A')
+                .replace(/Ē/g, 'E')
+                .replace(/Ī/g, 'I')
+                .replace(/Ō/g, 'O')
+                .replace(/Ū/g, 'U');
+        }
+
         // Verb conjugation database
         const verbs = {
             esse: {
@@ -430,19 +445,19 @@
                         pl: { '1': 'sumus', '2': 'estis', '3': 'sunt' }
                     },
                     imperfect: {
-                        sg: { '1': 'eram', '2': 'eras', '3': 'erat' },
-                        pl: { '1': 'eramus', '2': 'eratis', '3': 'erant' }
+                        sg: { '1': 'ēram', '2': 'ērās', '3': 'ērat' },
+                        pl: { '1': 'ērāmus', '2': 'ērātis', '3': 'ērant' }
                     },
                     perfect: {
-                        sg: { '1': 'fui', '2': 'fuisti', '3': 'fuit' },
-                        pl: { '1': 'fuimus', '2': 'fuistis', '3': 'fuerunt' }
+                        sg: { '1': 'fuī', '2': 'fuistī', '3': 'fuit' },
+                        pl: { '1': 'fuimus', '2': 'fuistis', '3': 'fuērunt' }
                     },
                     plusquamperfect: {
-                        sg: { '1': 'fueram', '2': 'fueras', '3': 'fuerat' },
-                        pl: { '1': 'fueramus', '2': 'fueratis', '3': 'fuerant' }
+                        sg: { '1': 'fueram', '2': 'fuerās', '3': 'fuerat' },
+                        pl: { '1': 'fuerāmus', '2': 'fuerātis', '3': 'fuerant' }
                     },
                     future1: {
-                        sg: { '1': 'ero', '2': 'eris', '3': 'erit' },
+                        sg: { '1': 'erō', '2': 'eris', '3': 'erit' },
                         pl: { '1': 'erimus', '2': 'eritis', '3': 'erunt' }
                     }
                 }
@@ -452,15 +467,15 @@
                 translation: 'to want',
                 conjugations: {
                     present: {
-                        sg: { '1': 'volo', '2': 'vis', '3': 'vult' },
+                        sg: { '1': 'volō', '2': 'vis', '3': 'vult' },
                         pl: { '1': 'volumus', '2': 'vultis', '3': 'volunt' }
                     },
                     imperfect: {
-                        sg: { '1': 'volebam', '2': 'volebas', '3': 'volebat' },
-                        pl: { '1': 'volebamus', '2': 'volebatis', '3': 'volebant' }
+                        sg: { '1': 'volēbam', '2': 'volēbās', '3': 'volēbat' },
+                        pl: { '1': 'volēbāmus', '2': 'volēbātis', '3': 'volēbant' }
                     },
                     perfect: {
-                        sg: { '1': 'volui', '2': 'voluisti', '3': 'voluit' },
+                        sg: { '1': 'voluī', '2': 'volustī', '3': 'voluit' },
                         pl: { '1': 'voluimus', '2': 'voluistis', '3': 'voluerunt' }
                     },
                     plusquamperfect: {
@@ -468,8 +483,8 @@
                         pl: { '1': 'volueramus', '2': 'volueratis', '3': 'voluerant' }
                     },
                     future1: {
-                        sg: { '1': 'volam', '2': 'voles', '3': 'volet' },
-                        pl: { '1': 'volemus', '2': 'voletis', '3': 'volent' }
+                        sg: { '1': 'volam', '2': 'volēs', '3': 'volet' },
+                        pl: { '1': 'volēmus', '2': 'volētis', '3': 'volent' }
                     }
                 }
             },
@@ -478,24 +493,24 @@
                 translation: 'not to want',
                 conjugations: {
                     present: {
-                        sg: { '1': 'nolo', '2': 'non vis', '3': 'non vult' },
+                        sg: { '1': 'nolō', '2': 'non vis', '3': 'non vult' },
                         pl: { '1': 'nolumus', '2': 'non vultis', '3': 'nolunt' }
                     },
                     imperfect: {
-                        sg: { '1': 'nolebam', '2': 'nolebas', '3': 'nolebat' },
-                        pl: { '1': 'nolebamus', '2': 'nolebatis', '3': 'nolebant' }
+                        sg: { '1': 'nolēbam', '2': 'nolēbās', '3': 'nolēbat' },
+                        pl: { '1': 'nolēbāmus', '2': 'nolēbātis', '3': 'nolēbant' }
                     },
                     perfect: {
-                        sg: { '1': 'nolui', '2': 'noluisti', '3': 'noluit' },
-                        pl: { '1': 'noluimus', '2': 'noluistis', '3': 'noluerunt' }
+                        sg: { '1': 'noluī', '2': 'nolustī', '3': 'noluit' },
+                        pl: { '1': 'noluimus', '2': 'noluistis', '3': 'noluērunt' }
                     },
                     plusquamperfect: {
-                        sg: { '1': 'nolueram', '2': 'nolueras', '3': 'noluerat' },
-                        pl: { '1': 'nolueramus', '2': 'nolueratis', '3': 'noluerant' }
+                        sg: { '1': 'nolueram', '2': 'noluerās', '3': 'noluerat' },
+                        pl: { '1': 'noluerāmus', '2': 'noluerātis', '3': 'noluerant' }
                     },
                     future1: {
-                        sg: { '1': 'nolam', '2': 'noles', '3': 'nolet' },
-                        pl: { '1': 'nolemus', '2': 'noletis', '3': 'nolent' }
+                        sg: { '1': 'nolam', '2': 'nolēs', '3': 'nolet' },
+                        pl: { '1': 'nolēmus', '2': 'nolētis', '3': 'nolent' }
                     }
                 }
             },
@@ -504,24 +519,24 @@
                 translation: 'to love',
                 conjugations: {
                     present: {
-                        sg: { '1': 'amo', '2': 'amas', '3': 'amat' },
-                        pl: { '1': 'amamus', '2': 'amatis', '3': 'amant' }
+                        sg: { '1': 'amō', '2': 'amās', '3': 'amat' },
+                        pl: { '1': 'amāmus', '2': 'amātis', '3': 'amant' }
                     },
                     imperfect: {
-                        sg: { '1': 'amabam', '2': 'amabas', '3': 'amabat' },
-                        pl: { '1': 'amabamus', '2': 'amabatis', '3': 'amabant' }
+                        sg: { '1': 'amābam', '2': 'amābās', '3': 'amābat' },
+                        pl: { '1': 'amābāmus', '2': 'amābātis', '3': 'amābant' }
                     },
                     perfect: {
-                        sg: { '1': 'amavi', '2': 'amavisti', '3': 'amavit' },
-                        pl: { '1': 'amavimus', '2': 'amavistis', '3': 'amaverunt' }
+                        sg: { '1': 'amāvī', '2': 'amāvistī', '3': 'amāvit' },
+                        pl: { '1': 'amāvimus', '2': 'amāvistis', '3': 'amāvērunt' }
                     },
                     plusquamperfect: {
-                        sg: { '1': 'amaveram', '2': 'amaveras', '3': 'amaverat' },
-                        pl: { '1': 'amaveramus', '2': 'amaveratis', '3': 'amaverant' }
+                        sg: { '1': 'amāveram', '2': 'amāverās', '3': 'amāverat' },
+                        pl: { '1': 'amāverāmus', '2': 'amāverātis', '3': 'amāverant' }
                     },
                     future1: {
-                        sg: { '1': 'amabo', '2': 'amabis', '3': 'amabit' },
-                        pl: { '1': 'amabimus', '2': 'amabitis', '3': 'amabunt' }
+                        sg: { '1': 'amābō', '2': 'amābis', '3': 'amābit' },
+                        pl: { '1': 'amābimus', '2': 'amābitis', '3': 'amābunt' }
                     }
                 }
             },
@@ -530,24 +545,24 @@
                 translation: 'to praise',
                 conjugations: {
                     present: {
-                        sg: { '1': 'laudo', '2': 'laudas', '3': 'laudat' },
-                        pl: { '1': 'laudamus', '2': 'laudatis', '3': 'laudant' }
+                        sg: { '1': 'laudō', '2': 'laudās', '3': 'laudat' },
+                        pl: { '1': 'laudāmus', '2': 'laudātis', '3': 'laudant' }
                     },
                     imperfect: {
-                        sg: { '1': 'laudabam', '2': 'laudabas', '3': 'laudabat' },
-                        pl: { '1': 'laudabamus', '2': 'laudabatis', '3': 'laudabant' }
+                        sg: { '1': 'laudābam', '2': 'laudābās', '3': 'laudābat' },
+                        pl: { '1': 'laudābāmus', '2': 'laudābātis', '3': 'laudābant' }
                     },
                     perfect: {
-                        sg: { '1': 'laudavi', '2': 'laudavisti', '3': 'laudavit' },
-                        pl: { '1': 'laudavimus', '2': 'laudavistis', '3': 'laudaverunt' }
+                        sg: { '1': 'laudāvī', '2': 'laudāvistī', '3': 'laudāvit' },
+                        pl: { '1': 'laudāvimus', '2': 'laudāvistis', '3': 'laudāvērunt' }
                     },
                     plusquamperfect: {
-                        sg: { '1': 'laudaveram', '2': 'laudaveras', '3': 'laudaverat' },
-                        pl: { '1': 'laudaveramus', '2': 'laudaveratis', '3': 'laudaverant' }
+                        sg: { '1': 'laudāveram', '2': 'laudāverās', '3': 'laudāverat' },
+                        pl: { '1': 'laudāverāmus', '2': 'laudāverātis', '3': 'laudāverant' }
                     },
                     future1: {
-                        sg: { '1': 'laudabo', '2': 'laudabis', '3': 'laudabit' },
-                        pl: { '1': 'laudabimus', '2': 'laudabitis', '3': 'laudabunt' }
+                        sg: { '1': 'laudābō', '2': 'laudābis', '3': 'laudābit' },
+                        pl: { '1': 'laudābimus', '2': 'laudābitis', '3': 'laudābunt' }
                     }
                 }
             },
@@ -556,24 +571,24 @@
                 translation: 'to say',
                 conjugations: {
                     present: {
-                        sg: { '1': 'dico', '2': 'dicis', '3': 'dicit' },
-                        pl: { '1': 'dicimus', '2': 'dicitis', '3': 'dicunt' }
+                        sg: { '1': 'dīcō', '2': 'dīcis', '3': 'dīcit' },
+                        pl: { '1': 'dīcimus', '2': 'dīcitis', '3': 'dīcunt' }
                     },
                     imperfect: {
-                        sg: { '1': 'dicebam', '2': 'dicebas', '3': 'dicebat' },
-                        pl: { '1': 'dicebamus', '2': 'dicebatis', '3': 'dicebant' }
+                        sg: { '1': 'dīcēbam', '2': 'dīcēbās', '3': 'dīcēbat' },
+                        pl: { '1': 'dīcēbāmus', '2': 'dīcēbātis', '3': 'dīcēbant' }
                     },
                     perfect: {
-                        sg: { '1': 'dixi', '2': 'dixisti', '3': 'dixit' },
-                        pl: { '1': 'diximus', '2': 'dixistis', '3': 'dixerunt' }
+                        sg: { '1': 'dīxī', '2': 'dīxistī', '3': 'dīxit' },
+                        pl: { '1': 'dīximus', '2': 'dīxistis', '3': 'dīxērunt' }
                     },
                     plusquamperfect: {
-                        sg: { '1': 'dixeram', '2': 'dixeras', '3': 'dixerat' },
-                        pl: { '1': 'dixeramus', '2': 'dixeratis', '3': 'dixerant' }
+                        sg: { '1': 'dīxeram', '2': 'dīxerās', '3': 'dīxerat' },
+                        pl: { '1': 'dīxerāmus', '2': 'dīxerātis', '3': 'dīxerant' }
                     },
                     future1: {
-                        sg: { '1': 'dicam', '2': 'dices', '3': 'dicet' },
-                        pl: { '1': 'dicemus', '2': 'dicetis', '3': 'dicent' }
+                        sg: { '1': 'dīcam', '2': 'dīces', '3': 'dīcet' },
+                        pl: { '1': 'dīcemus', '2': 'dīcetis', '3': 'dīcent' }
                     }
                 }
             }
@@ -613,6 +628,15 @@
         
         // Timeout tracking for auto-advance
         let pendingTimeout = null;
+        
+        // Track if last check was an error (for Mode 1)
+        let mode1LastError = false;
+        
+        // Track if last check was an error (for Mode 2)
+        let mode2LastError = false;
+        
+        // Track if a check is currently in progress (prevents button hammering)
+        let checkInProgress = false;
 
         // State for Mode 2
         let mode2State = {
@@ -625,6 +649,10 @@
             document.querySelector('.mode-1').classList.remove('active');
             document.querySelector('.mode-2').classList.remove('active');
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Reset error flags when switching modes
+            mode1LastError = false;
+            mode2LastError = false;
             
             if (mode === 1) {
                 document.querySelector('.mode-1').classList.add('active');
@@ -692,11 +720,25 @@
             document.getElementById('mode1-question').textContent = mode1State.form.form;
             document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('selected'));
             document.getElementById('mode1-feedback').classList.add('hidden');
+            checkInProgress = false;
+            document.querySelector('.mode-1 .ok-btn').disabled = false;
         }
 
         function checkMode1() {
+            // Prevent button hammering
+            if (checkInProgress) return;
+            checkInProgress = true;
+            document.querySelector('.mode-1 .ok-btn').disabled = true;
+            
             // Cancel any pending timeout
             if (pendingTimeout) clearTimeout(pendingTimeout);
+            
+            // If last check was an error, clicking OK again moves to next question
+            if (mode1LastError) {
+                mode1LastError = false;
+                nextMode1();
+                return;
+            }
             
             const isCorrect = 
                 mode1State.selected.tense === mode1State.form.tense &&
@@ -708,19 +750,28 @@
                 scoreState.correct++;
                 feedback.textContent = '✓ Correct!';
                 feedback.className = 'feedback correct';
+                mode1LastError = false;
+                updateScoreDisplay();
+                feedback.classList.remove('hidden');
+                
+                // Auto-advance on correct answer
+                pendingTimeout = setTimeout(() => {
+                    nextMode1();
+                    pendingTimeout = null;
+                }, 1500);
             } else {
                 scoreState.incorrect++;
                 const correct = `${tenseLongNames[mode1State.form.tense]}, ${personNames[mode1State.form.person]}, ${numberNames[mode1State.form.number]}`;
                 feedback.textContent = `✗ Wrong! Correct: ${correct}`;
                 feedback.className = 'feedback incorrect';
+                mode1LastError = true;
+                updateScoreDisplay();
+                feedback.classList.remove('hidden');
+                checkInProgress = false;
+                document.querySelector('.mode-1 .ok-btn').disabled = false;
+                
+                // Don't auto-advance on wrong answer - user needs to click OK again
             }
-            updateScoreDisplay();
-            feedback.classList.remove('hidden');
-            
-            pendingTimeout = setTimeout(() => {
-                nextMode1();
-                pendingTimeout = null;
-            }, 1500);
         }
 
         function nextMode2() {
@@ -736,38 +787,68 @@
             document.getElementById('mode2-hint').textContent = '';
             document.getElementById('mode2-hint').classList.add('hidden');
             document.getElementById('mode2-input').focus();
+            checkInProgress = false;
+            document.querySelector('.mode-2 .ok-btn').disabled = false;
         }
 
         function checkMode2() {
+            // Prevent button hammering
+            if (checkInProgress) return;
+            checkInProgress = true;
+            document.querySelector('.mode-2 .ok-btn').disabled = true;
+            
             // Cancel any pending timeout
             if (pendingTimeout) clearTimeout(pendingTimeout);
             
+            // If last check was an error, clicking Check again moves to next question
+            if (mode2LastError) {
+                mode2LastError = false;
+                nextMode2();
+                return;
+            }
+            
             const userInput = document.getElementById('mode2-input').value.trim().toLowerCase();
             const correctForm = mode2State.form.form.toLowerCase();
+            // Normalize both inputs by removing macrons for comparison
+            const userInputNormalized = removeMacrons(userInput).toLowerCase();
+            const correctFormNormalized = removeMacrons(correctForm).toLowerCase();
             
             const feedback = document.getElementById('mode2-feedback');
             const hint = document.getElementById('mode2-hint');
+            const input = document.getElementById('mode2-input');
             
-            if (userInput === correctForm) {
+            // Accept answer with or without macrons
+            if (userInputNormalized === correctFormNormalized) {
                 scoreState.correct++;
                 feedback.textContent = '✓ Correct! Great job!';
                 feedback.className = 'feedback correct';
                 hint.textContent = '';
                 hint.classList.add('hidden');
+                mode2LastError = false;
+                updateScoreDisplay();
+                feedback.classList.remove('hidden');
+                
+                // Auto-advance on correct answer
+                pendingTimeout = setTimeout(() => {
+                    nextMode2();
+                    pendingTimeout = null;
+                }, 1500);
             } else {
                 scoreState.incorrect++;
                 feedback.textContent = `✗ Wrong. The correct form is: ${mode2State.form.form}`;
                 feedback.className = 'feedback incorrect';
-                hint.textContent = `Tip: The infinitive is ${mode2State.form.verb}. The form you're looking for is: ${mode2State.form.form}`;
+                hint.textContent = `Tip: The infinitive is ${mode2State.form.verb}. The form you're looking for is: ${mode2State.form.form} (Macrons are optional)`;
                 hint.classList.remove('hidden');
+                mode2LastError = true;
+                updateScoreDisplay();
+                feedback.classList.remove('hidden');
+                checkInProgress = false;
+                document.querySelector('.mode-2 .ok-btn').disabled = false;
+                
+                // Clear input and focus for retry on wrong answer
+                input.value = '';
+                input.focus();
             }
-            updateScoreDisplay();
-            feedback.classList.remove('hidden');
-            
-            pendingTimeout = setTimeout(() => {
-                nextMode2();
-                pendingTimeout = null;
-            }, 1500);
         }
         
         function updateScoreDisplay() {
