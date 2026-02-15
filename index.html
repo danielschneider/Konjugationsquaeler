@@ -334,6 +334,95 @@
         .mode-2.active {
             display: block;
         }
+
+        .mode-3 {
+            display: none;
+        }
+
+        .mode-3.active {
+            display: block;
+        }
+
+        .verb-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .verb-btn {
+            padding: 10px 16px;
+            border: 2px solid #0f3460;
+            background-color: #0f3460;
+            color: #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .verb-btn.selected {
+            background-color: #6366f1;
+            color: #fff;
+            border-color: #6366f1;
+        }
+
+        .verb-btn:hover {
+            border-color: #6366f1;
+        }
+
+        .conjugation-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .conjugation-table th {
+            background-color: #0f3460;
+            padding: 12px;
+            text-align: left;
+            color: #6366f1;
+            font-weight: 600;
+            border: 1px solid #1a4d6d;
+        }
+
+        .conjugation-table td {
+            padding: 12px;
+            border: 1px solid #0f3460;
+            color: #ccc;
+        }
+
+        .conjugation-table tr:hover td {
+            background-color: #0f3460;
+        }
+
+        .conjugation-table .tense-header {
+            background-color: #1a4d6d;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .verb-selector {
+                gap: 8px;
+            }
+
+            .verb-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            .conjugation-table {
+                font-size: 0.8rem;
+            }
+
+            .conjugation-table th,
+            .conjugation-table td {
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -346,8 +435,9 @@
         </div>
         
         <div class="mode-switch">
-            <button class="mode-btn active" onclick="switchMode(1)">Mode 1: Guess Form</button>
-            <button class="mode-btn" onclick="switchMode(2)">Mode 2: Type Form</button>
+            <button class="mode-btn active" onclick="switchMode(1)">Modus 1: Form erraten</button>
+            <button class="mode-btn" onclick="switchMode(2)">Modus 2: Form eingeben</button>
+            <button class="mode-btn" onclick="switchMode(3)">Modus 3: Tabelle</button>
         </div>
 
         <!-- MODE 1: GUESS THE FORM -->
@@ -357,27 +447,27 @@
                 
                 <div class="toggles-grid">
                     <div class="toggle-group">
-                        <div class="toggle-label">Tense</div>
+                        <div class="toggle-label">Zeit</div>
                         <div class="toggle-options">
-                            <button class="toggle-btn" onclick="toggleSelection('tense', 'present')">Present</button>
-                            <button class="toggle-btn" onclick="toggleSelection('tense', 'imperfect')">Imperfect</button>
-                            <button class="toggle-btn" onclick="toggleSelection('tense', 'perfect')">Perfect</button>
-                            <button class="toggle-btn" onclick="toggleSelection('tense', 'plusquamperfect')">Plusquamperfect</button>
-                            <button class="toggle-btn" onclick="toggleSelection('tense', 'future1')">Future 1</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'present')">Präsens</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'imperfect')">Imperfekt</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'perfect')">Perfekt</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'plusquamperfect')">Plusquamperfekt</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'future1')">Futur 1</button>
                         </div>
                     </div>
 
                     <div class="toggle-group">
                         <div class="toggle-label">Person</div>
                         <div class="toggle-options">
-                            <button class="toggle-btn" onclick="toggleSelection('person', '1')">1st</button>
-                            <button class="toggle-btn" onclick="toggleSelection('person', '2')">2nd</button>
-                            <button class="toggle-btn" onclick="toggleSelection('person', '3')">3rd</button>
+                            <button class="toggle-btn" onclick="toggleSelection('person', '1')">1. Pers.</button>
+                            <button class="toggle-btn" onclick="toggleSelection('person', '2')">2. Pers.</button>
+                            <button class="toggle-btn" onclick="toggleSelection('person', '3')">3. Pers.</button>
                         </div>
                     </div>
 
                     <div class="toggle-group">
-                        <div class="toggle-label">Number</div>
+                        <div class="toggle-label">Numerus</div>
                         <div class="toggle-options">
                             <button class="toggle-btn" onclick="toggleSelection('number', 'sg')">Singular</button>
                             <button class="toggle-btn" onclick="toggleSelection('number', 'pl')">Plural</button>
@@ -386,7 +476,7 @@
                 </div>
 
                 <div class="buttons">
-                    <button class="ok-btn" onclick="checkMode1()">OK</button>
+                    <button class="ok-btn" onclick="checkMode1()">Prüfen</button>
                 </div>
 
                 <div class="feedback hidden" id="mode1-feedback"></div>
@@ -397,23 +487,36 @@
         <div class="mode-2">
             <div class="content">
                 <div style="background-color: #0f3460; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-                    <div style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 10px;">Conjugate:</div>
+                    <div style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 10px;">Konjugiere:</div>
                     <div style="font-size: 1.5rem; font-weight: 600; color: #6366f1; margin-bottom: 15px;" id="mode2-verb">amare</div>
                     <div style="display: flex; flex-direction: column; gap: 8px; font-size: 1.1rem; color: #ccc;">
-                        <div><span style="color: #888;">Tense:</span> <span style="color: #fff; font-weight: 600;" id="mode2-tense">Present</span></div>
-                        <div><span style="color: #888;">Person:</span> <span style="color: #fff; font-weight: 600;" id="mode2-person">1st</span></div>
-                        <div><span style="color: #888;">Number:</span> <span style="color: #fff; font-weight: 600;" id="mode2-number">Singular</span></div>
+                        <div><span style="color: #888;">Zeit:</span> <span style="color: #fff; font-weight: 600;" id="mode2-tense">Präsens</span></div>
+                        <div><span style="color: #888;">Person:</span> <span style="color: #fff; font-weight: 600;" id="mode2-person">1. Pers.</span></div>
+                        <div><span style="color: #888;">Numerus:</span> <span style="color: #fff; font-weight: 600;" id="mode2-number">Singular</span></div>
                     </div>
                 </div>
                 
-                <input type="text" class="input-field" id="mode2-input" placeholder="Type the form (macrons optional)..." onkeypress="handleEnter(event)" autocomplete="off" autofocus>
+                <input type="text" class="input-field" id="mode2-input" placeholder="Form eingeben (Makronen optional)..." onkeypress="handleEnter(event)" autocomplete="off" autofocus>
 
                 <div class="buttons">
-                    <button class="ok-btn" onclick="checkMode2()">Check</button>
+                    <button class="ok-btn" onclick="checkMode2()">Prüfen</button>
                 </div>
 
                 <div class="feedback hidden" id="mode2-feedback"></div>
                 <div class="hint hidden" id="mode2-hint"></div>
+            </div>
+        </div>
+
+        <!-- MODE 3: CONJUGATION TABLE -->
+        <div class="mode-3">
+            <div class="content">
+                <div style="margin-bottom: 25px;">
+                    <div style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 15px;">Wähle ein Verb:</div>
+                    <div class="verb-selector" id="verb-selector"></div>
+                </div>
+                <div id="table-container">
+                    <!-- Table will be generated here -->
+                </div>
             </div>
         </div>
     </div>
@@ -591,21 +694,125 @@
                         pl: { '1': 'dīcemus', '2': 'dīcetis', '3': 'dīcent' }
                     }
                 }
+            },
+            perdere: {
+                infinitive: 'perdere',
+                translation: 'to lose/destroy',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'perdō', '2': 'perdis', '3': 'perdit' },
+                        pl: { '1': 'perdimus', '2': 'perditis', '3': 'perdunt' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'perdēbam', '2': 'perdēbās', '3': 'perdēbat' },
+                        pl: { '1': 'perdēbāmus', '2': 'perdēbātis', '3': 'perdēbant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'perdidī', '2': 'perdidistī', '3': 'perdidit' },
+                        pl: { '1': 'perdidimus', '2': 'perdidistis', '3': 'perdidērunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'perdideram', '2': 'perdiderās', '3': 'perdiderat' },
+                        pl: { '1': 'perdiderāmus', '2': 'perdiderātis', '3': 'perdiderant' }
+                    },
+                    future1: {
+                        sg: { '1': 'perdām', '2': 'perdēs', '3': 'perdet' },
+                        pl: { '1': 'perdēmus', '2': 'perdētis', '3': 'perdent' }
+                    }
+                }
+            },
+            credere: {
+                infinitive: 'credere',
+                translation: 'to believe',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'credō', '2': 'credis', '3': 'credit' },
+                        pl: { '1': 'credimus', '2': 'creditis', '3': 'credunt' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'credēbam', '2': 'credēbās', '3': 'credēbat' },
+                        pl: { '1': 'credēbāmus', '2': 'credēbātis', '3': 'credēbant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'credidī', '2': 'credidistī', '3': 'credidit' },
+                        pl: { '1': 'credidimus', '2': 'credidistis', '3': 'credidērunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'credideram', '2': 'crediderās', '3': 'crediderat' },
+                        pl: { '1': 'crediderāmus', '2': 'crediderātis', '3': 'crediderant' }
+                    },
+                    future1: {
+                        sg: { '1': 'credām', '2': 'credēs', '3': 'credet' },
+                        pl: { '1': 'credēmus', '2': 'credētis', '3': 'credent' }
+                    }
+                }
+            },
+            habere: {
+                infinitive: 'habere',
+                translation: 'to have',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'habeō', '2': 'habēs', '3': 'habet' },
+                        pl: { '1': 'habēmus', '2': 'habētis', '3': 'habent' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'habēbam', '2': 'habēbās', '3': 'habēbat' },
+                        pl: { '1': 'habēbāmus', '2': 'habēbātis', '3': 'habēbant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'habuī', '2': 'habuistī', '3': 'habuit' },
+                        pl: { '1': 'habuimus', '2': 'habuistis', '3': 'habuērunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'habueram', '2': 'habuerās', '3': 'habuerat' },
+                        pl: { '1': 'habuerāmus', '2': 'habuerātis', '3': 'habuerant' }
+                    },
+                    future1: {
+                        sg: { '1': 'habēbō', '2': 'habēbis', '3': 'habēbit' },
+                        pl: { '1': 'habēbimus', '2': 'habēbitis', '3': 'habēbunt' }
+                    }
+                }
+            },
+            mittere: {
+                infinitive: 'mittere',
+                translation: 'to send',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'mittō', '2': 'mittis', '3': 'mittit' },
+                        pl: { '1': 'mittimus', '2': 'mittitis', '3': 'mittunt' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'mittēbam', '2': 'mittēbās', '3': 'mittēbat' },
+                        pl: { '1': 'mittēbāmus', '2': 'mittēbātis', '3': 'mittēbant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'mīsī', '2': 'mīsistī', '3': 'mīsit' },
+                        pl: { '1': 'mīsimus', '2': 'mīsistis', '3': 'mīsērunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'mīseram', '2': 'mīserās', '3': 'mīserat' },
+                        pl: { '1': 'mīserāmus', '2': 'mīserātis', '3': 'mīserant' }
+                    },
+                    future1: {
+                        sg: { '1': 'mittam', '2': 'mittēs', '3': 'mittet' },
+                        pl: { '1': 'mittēmus', '2': 'mittētis', '3': 'mittent' }
+                    }
+                }
             }
         };
 
         const tenseLongNames = {
-            present: 'Present',
-            imperfect: 'Imperfect',
-            perfect: 'Perfect',
-            plusquamperfect: 'Plusquamperfect',
-            future1: 'Future 1'
+            present: 'Präsens',
+            imperfect: 'Imperfekt',
+            perfect: 'Perfekt',
+            plusquamperfect: 'Plusquamperfekt',
+            future1: 'Futur 1'
         };
 
         const personNames = {
-            '1': '1st Person',
-            '2': '2nd Person',
-            '3': '3rd Person'
+            '1': '1. Person',
+            '2': '2. Person',
+            '3': '3. Person'
         };
 
         const numberNames = {
@@ -648,6 +855,7 @@
         function switchMode(mode) {
             document.querySelector('.mode-1').classList.remove('active');
             document.querySelector('.mode-2').classList.remove('active');
+            document.querySelector('.mode-3').classList.remove('active');
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
             
             // Reset error flags when switching modes
@@ -658,10 +866,14 @@
                 document.querySelector('.mode-1').classList.add('active');
                 document.querySelectorAll('.mode-btn')[0].classList.add('active');
                 nextMode1();
-            } else {
+            } else if (mode === 2) {
                 document.querySelector('.mode-2').classList.add('active');
                 document.querySelectorAll('.mode-btn')[1].classList.add('active');
                 nextMode2();
+            } else if (mode === 3) {
+                document.querySelector('.mode-3').classList.add('active');
+                document.querySelectorAll('.mode-btn')[2].classList.add('active');
+                initMode3();
             }
         }
 
@@ -748,7 +960,7 @@
             const feedback = document.getElementById('mode1-feedback');
             if (isCorrect) {
                 scoreState.correct++;
-                feedback.textContent = '✓ Correct!';
+                feedback.textContent = '✓ Richtig!';
                 feedback.className = 'feedback correct';
                 mode1LastError = false;
                 updateScoreDisplay();
@@ -762,7 +974,7 @@
             } else {
                 scoreState.incorrect++;
                 const correct = `${tenseLongNames[mode1State.form.tense]}, ${personNames[mode1State.form.person]}, ${numberNames[mode1State.form.number]}`;
-                feedback.textContent = `✗ Wrong! Correct: ${correct}`;
+                feedback.textContent = `✗ Falsch! Korrekt: ${correct}`;
                 feedback.className = 'feedback incorrect';
                 mode1LastError = true;
                 updateScoreDisplay();
@@ -820,7 +1032,7 @@
             // Accept answer with or without macrons
             if (userInputNormalized === correctFormNormalized) {
                 scoreState.correct++;
-                feedback.textContent = '✓ Correct! Great job!';
+                feedback.textContent = '✓ Richtig! Sehr gut!';
                 feedback.className = 'feedback correct';
                 hint.textContent = '';
                 hint.classList.add('hidden');
@@ -835,9 +1047,9 @@
                 }, 1500);
             } else {
                 scoreState.incorrect++;
-                feedback.textContent = `✗ Wrong. The correct form is: ${mode2State.form.form}`;
+                feedback.textContent = `✗ Falsch. Die richtige Form ist: ${mode2State.form.form}`;
                 feedback.className = 'feedback incorrect';
-                hint.textContent = `Tip: The infinitive is ${mode2State.form.verb}. The form you're looking for is: ${mode2State.form.form} (Macrons are optional)`;
+                hint.textContent = `Tipp: Das Infinitiv ist ${mode2State.form.verb}. Die Form, die du suchst, ist: ${mode2State.form.form} (Makronen sind optional)`;
                 hint.classList.remove('hidden');
                 mode2LastError = true;
                 updateScoreDisplay();
@@ -860,6 +1072,79 @@
             if (event.key === 'Enter') {
                 checkMode2();
             }
+        }
+
+        // Mode 3 functions
+        let mode3CurrentVerb = 'amare';
+
+        function initMode3() {
+            // Create verb selector buttons
+            const selector = document.getElementById('verb-selector');
+            selector.innerHTML = '';
+            
+            const verbNames = Object.keys(verbs);
+            verbNames.forEach(verb => {
+                const btn = document.createElement('button');
+                btn.className = 'verb-btn' + (verb === mode3CurrentVerb ? ' selected' : '');
+                btn.textContent = verb;
+                btn.onclick = () => showConjugationTable(verb);
+                selector.appendChild(btn);
+            });
+            
+            showConjugationTable(mode3CurrentVerb);
+        }
+
+        function showConjugationTable(verbName) {
+            mode3CurrentVerb = verbName;
+            
+            // Update selected button
+            document.querySelectorAll('.verb-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent === verbName) {
+                    btn.classList.add('selected');
+                }
+            });
+            
+            const verb = verbs[verbName];
+            const tenses = Object.keys(verb.conjugations);
+            let html = '';
+            
+            // Create table for each tense
+            tenses.forEach(tense => {
+                html += `
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #6366f1; margin-bottom: 12px; font-size: 1.2rem;">${tenseLongNames[tense]}</h3>
+                    <table class="conjugation-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Person</th>
+                                <th style="width: 25%;">Singular</th>
+                                <th style="width: 25%;">Plural</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${personNames['1']}</td>
+                                <td><strong>${verb.conjugations[tense].sg['1']}</strong></td>
+                                <td><strong>${verb.conjugations[tense].pl['1']}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>${personNames['2']}</td>
+                                <td><strong>${verb.conjugations[tense].sg['2']}</strong></td>
+                                <td><strong>${verb.conjugations[tense].pl['2']}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>${personNames['3']}</td>
+                                <td><strong>${verb.conjugations[tense].sg['3']}</strong></td>
+                                <td><strong>${verb.conjugations[tense].pl['3']}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                `;
+            });
+            
+            document.getElementById('table-container').innerHTML = html;
         }
 
         // Initialize
