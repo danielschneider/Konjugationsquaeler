@@ -1,19 +1,788 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your App</title>
-    <!-- React 19 CDN -->
-    <script crossorigin src="https://unpkg.com/react@19/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@19/umd/react-dom.development.js"></script>
-    <!-- Babel for JSX support -->
-    <script src="babel/standalone/babel.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latin Master</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            padding: 20px 10px;
+        }
+        
+        .score-display {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .score-item {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .score-correct {
+            background-color: #10b981;
+            color: #fff;
+        }
+        
+        .score-incorrect {
+            background-color: #ef4444;
+            color: #fff;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            padding: 12px 24px;
+            border: 2px solid #6366f1;
+            background-color: transparent;
+            color: #6366f1;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .mode-btn.active {
+            background-color: #6366f1;
+            color: #1a1a2e;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .content {
+            background-color: #16213e;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #0f3460;
+        }
+
+        .question {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #6366f1;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .toggles-grid > .toggle-group:nth-child(1) {
+            grid-row: 1 / 3;
+        }
+        
+        .toggles-grid > .toggle-group:nth-child(2) {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        
+        .toggles-grid > .toggle-group:nth-child(3) {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        @media (max-width: 600px) {
+            .toggles-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+            
+            .toggles-grid > .toggle-group {
+                grid-row: auto;
+                grid-column: 1;
+            }
+            
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+            
+            .mode-switch {
+                margin-bottom: 20px;
+                gap: 8px;
+            }
+            
+            .mode-btn {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                flex: 1;
+            }
+            
+            .question {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .toggle-btn {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .ok-btn, .next-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .score-display {
+                gap: 10px;
+                margin-bottom: 15px;
+                font-size: 0.8rem;
+            }
+            
+            .score-item {
+                padding: 6px 12px;
+            }
+        }
+
+        .toggle-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toggle-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-options {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .toggle-btn {
+            padding: 10px 12px;
+            border: 2px solid #0f3460;
+            background-color: #0f3460;
+            color: #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .toggle-btn.selected {
+            background-color: #6366f1;
+            color: #fff;
+            border-color: #6366f1;
+        }
+
+        .toggle-btn:hover {
+            border-color: #6366f1;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid #0f3460;
+            background-color: #0f3460;
+            color: #fff;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            background-color: #16213e;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .ok-btn, .next-btn {
+            padding: 14px 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ok-btn {
+            background-color: #6366f1;
+            color: #fff;
+        }
+
+        .ok-btn:hover {
+            background-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .next-btn {
+            background-color: #0f3460;
+            color: #6366f1;
+        }
+
+        .next-btn:hover {
+            background-color: #16213e;
+        }
+
+        .feedback {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feedback.correct {
+            background-color: #10b981;
+            color: #fff;
+        }
+
+        .feedback.incorrect {
+            background-color: #ef4444;
+            color: #fff;
+        }
+
+        .feedback.hidden {
+            display: none;
+        }
+
+        .hint {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #0f3460;
+            border-left: 4px solid #6366f1;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        .mode-1 {
+            display: none;
+        }
+
+        .mode-1.active {
+            display: block;
+        }
+
+        .mode-2 {
+            display: none;
+        }
+
+        .mode-2.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <div id="root">
-        <!-- React app will be mounted here -->
+    <div class="container">
+        <h1>Latin Master</h1>
+        
+        <div class="score-display">
+            <div class="score-item score-correct">✓ <span id="score-correct">0</span></div>
+            <div class="score-item score-incorrect">✗ <span id="score-incorrect">0</span></div>
+        </div>
+        
+        <div class="mode-switch">
+            <button class="mode-btn active" onclick="switchMode(1)">Mode 1: Guess Form</button>
+            <button class="mode-btn" onclick="switchMode(2)">Mode 2: Type Form</button>
+        </div>
+
+        <!-- MODE 1: GUESS THE FORM -->
+        <div class="mode-1 active">
+            <div class="content">
+                <div class="question" id="mode1-question">amat</div>
+                
+                <div class="toggles-grid">
+                    <div class="toggle-group">
+                        <div class="toggle-label">Tense</div>
+                        <div class="toggle-options">
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'present')">Present</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'imperfect')">Imperfect</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'perfect')">Perfect</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'plusquamperfect')">Plusquamperfect</button>
+                            <button class="toggle-btn" onclick="toggleSelection('tense', 'future1')">Future 1</button>
+                        </div>
+                    </div>
+
+                    <div class="toggle-group">
+                        <div class="toggle-label">Person</div>
+                        <div class="toggle-options">
+                            <button class="toggle-btn" onclick="toggleSelection('person', '1')">1st</button>
+                            <button class="toggle-btn" onclick="toggleSelection('person', '2')">2nd</button>
+                            <button class="toggle-btn" onclick="toggleSelection('person', '3')">3rd</button>
+                        </div>
+                    </div>
+
+                    <div class="toggle-group">
+                        <div class="toggle-label">Number</div>
+                        <div class="toggle-options">
+                            <button class="toggle-btn" onclick="toggleSelection('number', 'sg')">Singular</button>
+                            <button class="toggle-btn" onclick="toggleSelection('number', 'pl')">Plural</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button class="ok-btn" onclick="checkMode1()">OK</button>
+                </div>
+
+                <div class="feedback hidden" id="mode1-feedback"></div>
+            </div>
+        </div>
+
+        <!-- MODE 2: TYPE THE FORM -->
+        <div class="mode-2">
+            <div class="content">
+                <div style="background-color: #0f3460; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                    <div style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 10px;">Conjugate:</div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: #6366f1; margin-bottom: 15px;" id="mode2-verb">amare</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 1.1rem; color: #ccc;">
+                        <div><span style="color: #888;">Tense:</span> <span style="color: #fff; font-weight: 600;" id="mode2-tense">Present</span></div>
+                        <div><span style="color: #888;">Person:</span> <span style="color: #fff; font-weight: 600;" id="mode2-person">1st</span></div>
+                        <div><span style="color: #888;">Number:</span> <span style="color: #fff; font-weight: 600;" id="mode2-number">Singular</span></div>
+                    </div>
+                </div>
+                
+                <input type="text" class="input-field" id="mode2-input" placeholder="Type the conjugated form..." onkeypress="handleEnter(event)" autocomplete="off" autofocus>
+
+                <div class="buttons">
+                    <button class="ok-btn" onclick="checkMode2()">Check</button>
+                </div>
+
+                <div class="feedback hidden" id="mode2-feedback"></div>
+                <div class="hint hidden" id="mode2-hint"></div>
+            </div>
+        </div>
     </div>
 
-    <script type="text/babel" src="main.js"></script>
+    <script>
+        // Verb conjugation database
+        const verbs = {
+            esse: {
+                infinitive: 'esse',
+                translation: 'to be',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'sum', '2': 'es', '3': 'est' },
+                        pl: { '1': 'sumus', '2': 'estis', '3': 'sunt' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'eram', '2': 'eras', '3': 'erat' },
+                        pl: { '1': 'eramus', '2': 'eratis', '3': 'erant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'fui', '2': 'fuisti', '3': 'fuit' },
+                        pl: { '1': 'fuimus', '2': 'fuistis', '3': 'fuerunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'fueram', '2': 'fueras', '3': 'fuerat' },
+                        pl: { '1': 'fueramus', '2': 'fueratis', '3': 'fuerant' }
+                    },
+                    future1: {
+                        sg: { '1': 'ero', '2': 'eris', '3': 'erit' },
+                        pl: { '1': 'erimus', '2': 'eritis', '3': 'erunt' }
+                    }
+                }
+            },
+            velle: {
+                infinitive: 'velle',
+                translation: 'to want',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'volo', '2': 'vis', '3': 'vult' },
+                        pl: { '1': 'volumus', '2': 'vultis', '3': 'volunt' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'volebam', '2': 'volebas', '3': 'volebat' },
+                        pl: { '1': 'volebamus', '2': 'volebatis', '3': 'volebant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'volui', '2': 'voluisti', '3': 'voluit' },
+                        pl: { '1': 'voluimus', '2': 'voluistis', '3': 'voluerunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'volueram', '2': 'volueras', '3': 'voluerat' },
+                        pl: { '1': 'volueramus', '2': 'volueratis', '3': 'voluerant' }
+                    },
+                    future1: {
+                        sg: { '1': 'volam', '2': 'voles', '3': 'volet' },
+                        pl: { '1': 'volemus', '2': 'voletis', '3': 'volent' }
+                    }
+                }
+            },
+            nolle: {
+                infinitive: 'nolle',
+                translation: 'not to want',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'nolo', '2': 'non vis', '3': 'non vult' },
+                        pl: { '1': 'nolumus', '2': 'non vultis', '3': 'nolunt' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'nolebam', '2': 'nolebas', '3': 'nolebat' },
+                        pl: { '1': 'nolebamus', '2': 'nolebatis', '3': 'nolebant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'nolui', '2': 'noluisti', '3': 'noluit' },
+                        pl: { '1': 'noluimus', '2': 'noluistis', '3': 'noluerunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'nolueram', '2': 'nolueras', '3': 'noluerat' },
+                        pl: { '1': 'nolueramus', '2': 'nolueratis', '3': 'noluerant' }
+                    },
+                    future1: {
+                        sg: { '1': 'nolam', '2': 'noles', '3': 'nolet' },
+                        pl: { '1': 'nolemus', '2': 'noletis', '3': 'nolent' }
+                    }
+                }
+            },
+            amare: {
+                infinitive: 'amare',
+                translation: 'to love',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'amo', '2': 'amas', '3': 'amat' },
+                        pl: { '1': 'amamus', '2': 'amatis', '3': 'amant' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'amabam', '2': 'amabas', '3': 'amabat' },
+                        pl: { '1': 'amabamus', '2': 'amabatis', '3': 'amabant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'amavi', '2': 'amavisti', '3': 'amavit' },
+                        pl: { '1': 'amavimus', '2': 'amavistis', '3': 'amaverunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'amaveram', '2': 'amaveras', '3': 'amaverat' },
+                        pl: { '1': 'amaveramus', '2': 'amaveratis', '3': 'amaverant' }
+                    },
+                    future1: {
+                        sg: { '1': 'amabo', '2': 'amabis', '3': 'amabit' },
+                        pl: { '1': 'amabimus', '2': 'amabitis', '3': 'amabunt' }
+                    }
+                }
+            },
+            laudare: {
+                infinitive: 'laudare',
+                translation: 'to praise',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'laudo', '2': 'laudas', '3': 'laudat' },
+                        pl: { '1': 'laudamus', '2': 'laudatis', '3': 'laudant' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'laudabam', '2': 'laudabas', '3': 'laudabat' },
+                        pl: { '1': 'laudabamus', '2': 'laudabatis', '3': 'laudabant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'laudavi', '2': 'laudavisti', '3': 'laudavit' },
+                        pl: { '1': 'laudavimus', '2': 'laudavistis', '3': 'laudaverunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'laudaveram', '2': 'laudaveras', '3': 'laudaverat' },
+                        pl: { '1': 'laudaveramus', '2': 'laudaveratis', '3': 'laudaverant' }
+                    },
+                    future1: {
+                        sg: { '1': 'laudabo', '2': 'laudabis', '3': 'laudabit' },
+                        pl: { '1': 'laudabimus', '2': 'laudabitis', '3': 'laudabunt' }
+                    }
+                }
+            },
+            dire: {
+                infinitive: 'dire',
+                translation: 'to say',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'dico', '2': 'dicis', '3': 'dicit' },
+                        pl: { '1': 'dicimus', '2': 'dicitis', '3': 'dicunt' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'dicebam', '2': 'dicebas', '3': 'dicebat' },
+                        pl: { '1': 'dicebamus', '2': 'dicebatis', '3': 'dicebant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'dixi', '2': 'dixisti', '3': 'dixit' },
+                        pl: { '1': 'diximus', '2': 'dixistis', '3': 'dixerunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'dixeram', '2': 'dixeras', '3': 'dixerat' },
+                        pl: { '1': 'dixeramus', '2': 'dixeratis', '3': 'dixerant' }
+                    },
+                    future1: {
+                        sg: { '1': 'dicam', '2': 'dices', '3': 'dicet' },
+                        pl: { '1': 'dicemus', '2': 'dicetis', '3': 'dicent' }
+                    }
+                }
+            }
+        };
+
+        const tenseLongNames = {
+            present: 'Present',
+            imperfect: 'Imperfect',
+            perfect: 'Perfect',
+            plusquamperfect: 'Plusquamperfect',
+            future1: 'Future 1'
+        };
+
+        const personNames = {
+            '1': '1st Person',
+            '2': '2nd Person',
+            '3': '3rd Person'
+        };
+
+        const numberNames = {
+            sg: 'Singular',
+            pl: 'Plural'
+        };
+
+        // State for Mode 1
+        let mode1State = {
+            verb: 'amare',
+            form: null,
+            selected: { tense: null, person: null, number: null }
+        };
+        
+        // Score tracking
+        let scoreState = {
+            correct: 0,
+            incorrect: 0
+        };
+        
+        // Timeout tracking for auto-advance
+        let pendingTimeout = null;
+
+        // State for Mode 2
+        let mode2State = {
+            verb: 'amare',
+            form: null,
+            currentQuestion: {}
+        };
+
+        function switchMode(mode) {
+            document.querySelector('.mode-1').classList.remove('active');
+            document.querySelector('.mode-2').classList.remove('active');
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (mode === 1) {
+                document.querySelector('.mode-1').classList.add('active');
+                document.querySelectorAll('.mode-btn')[0].classList.add('active');
+                nextMode1();
+            } else {
+                document.querySelector('.mode-2').classList.add('active');
+                document.querySelectorAll('.mode-btn')[1].classList.add('active');
+                nextMode2();
+            }
+        }
+
+        function toggleSelection(type, value) {
+            mode1State.selected[type] = mode1State.selected[type] === value ? null : value;
+            
+            document.querySelectorAll(`.toggle-btn`).forEach(btn => {
+                const parentGroup = btn.closest('.toggle-group');
+                if (parentGroup && parentGroup.querySelector(`.toggle-label`).textContent.toLowerCase() === type.toLowerCase() || 
+                    (type === 'verb' && parentGroup && parentGroup.querySelector(`.toggle-label`).textContent === 'Verb')) {
+                    btn.classList.remove('selected');
+                }
+            });
+
+            // Reselect buttons
+            document.querySelectorAll(`.toggle-btn`).forEach(btn => {
+                const parent = btn.closest('.toggle-group');
+                const label = parent?.querySelector('.toggle-label')?.textContent?.toLowerCase() || '';
+                
+                if (type === 'tense' && label === 'tense' && btn.textContent.toLowerCase().replace(' ', '') === value) {
+                    btn.classList.toggle('selected');
+                } else if (type === 'person' && label === 'person' && btn.textContent.match(/\d/)?.[0] === value) {
+                    btn.classList.toggle('selected');
+                } else if (type === 'number' && label === 'number' && ((value === 'sg' && btn.textContent === 'Singular') || (value === 'pl' && btn.textContent === 'Plural'))) {
+                    btn.classList.toggle('selected');
+                } else if (type === 'verb' && label === 'verb' && btn.textContent === value) {
+                    btn.classList.toggle('selected');
+                }
+            });
+        }
+
+        function getRandomForm() {
+            const verbNames = Object.keys(verbs);
+            const randomVerb = verbNames[Math.floor(Math.random() * verbNames.length)];
+            const tenses = Object.keys(verbs[randomVerb].conjugations);
+            const randomTense = tenses[Math.floor(Math.random() * tenses.length)];
+            const numbers = Object.keys(verbs[randomVerb].conjugations[randomTense]);
+            const randomNumber = numbers[Math.floor(Math.random() * numbers.length)];
+            const persons = Object.keys(verbs[randomVerb].conjugations[randomTense][randomNumber]);
+            const randomPerson = persons[Math.floor(Math.random() * persons.length)];
+            
+            const conjugation = verbs[randomVerb].conjugations[randomTense][randomNumber][randomPerson];
+            
+            return {
+                verb: randomVerb,
+                tense: randomTense,
+                number: randomNumber,
+                person: randomPerson,
+                form: conjugation
+            };
+        }
+
+        function nextMode1() {
+            mode1State.form = getRandomForm();
+            mode1State.selected = { tense: null, person: null, number: null, verb: null };
+            document.getElementById('mode1-question').textContent = mode1State.form.form;
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('mode1-feedback').classList.add('hidden');
+        }
+
+        function checkMode1() {
+            // Cancel any pending timeout
+            if (pendingTimeout) clearTimeout(pendingTimeout);
+            
+            const isCorrect = 
+                mode1State.selected.tense === mode1State.form.tense &&
+                mode1State.selected.person === mode1State.form.person &&
+                mode1State.selected.number === mode1State.form.number;
+
+            const feedback = document.getElementById('mode1-feedback');
+            if (isCorrect) {
+                scoreState.correct++;
+                feedback.textContent = '✓ Correct!';
+                feedback.className = 'feedback correct';
+            } else {
+                scoreState.incorrect++;
+                const correct = `${tenseLongNames[mode1State.form.tense]}, ${personNames[mode1State.form.person]}, ${numberNames[mode1State.form.number]}`;
+                feedback.textContent = `✗ Wrong! Correct: ${correct}`;
+                feedback.className = 'feedback incorrect';
+            }
+            updateScoreDisplay();
+            feedback.classList.remove('hidden');
+            
+            pendingTimeout = setTimeout(() => {
+                nextMode1();
+                pendingTimeout = null;
+            }, 1500);
+        }
+
+        function nextMode2() {
+            mode2State.form = getRandomForm();
+            mode2State.currentQuestion = mode2State.form;
+            document.getElementById('mode2-verb').textContent = mode2State.form.verb;
+            document.getElementById('mode2-tense').textContent = tenseLongNames[mode2State.form.tense];
+            document.getElementById('mode2-person').textContent = personNames[mode2State.form.person];
+            document.getElementById('mode2-number').textContent = numberNames[mode2State.form.number];
+            document.getElementById('mode2-input').value = '';
+            document.getElementById('mode2-feedback').textContent = '';
+            document.getElementById('mode2-feedback').classList.add('hidden');
+            document.getElementById('mode2-hint').textContent = '';
+            document.getElementById('mode2-hint').classList.add('hidden');
+            document.getElementById('mode2-input').focus();
+        }
+
+        function checkMode2() {
+            // Cancel any pending timeout
+            if (pendingTimeout) clearTimeout(pendingTimeout);
+            
+            const userInput = document.getElementById('mode2-input').value.trim().toLowerCase();
+            const correctForm = mode2State.form.form.toLowerCase();
+            
+            const feedback = document.getElementById('mode2-feedback');
+            const hint = document.getElementById('mode2-hint');
+            
+            if (userInput === correctForm) {
+                scoreState.correct++;
+                feedback.textContent = '✓ Correct! Great job!';
+                feedback.className = 'feedback correct';
+                hint.textContent = '';
+                hint.classList.add('hidden');
+            } else {
+                scoreState.incorrect++;
+                feedback.textContent = `✗ Wrong. The correct form is: ${mode2State.form.form}`;
+                feedback.className = 'feedback incorrect';
+                hint.textContent = `Tip: The infinitive is ${mode2State.form.verb}. The form you're looking for is: ${mode2State.form.form}`;
+                hint.classList.remove('hidden');
+            }
+            updateScoreDisplay();
+            feedback.classList.remove('hidden');
+            
+            pendingTimeout = setTimeout(() => {
+                nextMode2();
+                pendingTimeout = null;
+            }, 1500);
+        }
+        
+        function updateScoreDisplay() {
+            document.getElementById('score-correct').textContent = scoreState.correct;
+            document.getElementById('score-incorrect').textContent = scoreState.incorrect;
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                checkMode2();
+            }
+        }
+
+        // Initialize
+        nextMode1();
+    </script>
 </body>
 </html>
