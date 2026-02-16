@@ -286,17 +286,21 @@
         }
 
         .feedback {
-            margin-top: 30px;
-            padding: 15px;
+            margin-top: 10px;
+            padding: 8px 15px;
             border-radius: 6px;
             font-size: 1rem;
             font-weight: 600;
             text-align: center;
-            min-height: 50px;
+            min-height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             order: -1;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            height: 30px;
         }
 
         .feedback.correct {
@@ -310,7 +314,13 @@
         }
 
         .feedback.hidden {
-            display: none;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .feedback:not(.hidden) {
+            visibility: visible;
+            opacity: 1;
         }
 
         .hint {
@@ -756,6 +766,32 @@
                     future1: {
                         sg: { '1': 'credām', '2': 'credēs', '3': 'credet' },
                         pl: { '1': 'credēmus', '2': 'credētis', '3': 'credent' }
+                    }
+                }
+            },
+            facere: {
+                infinitive: 'facere',
+                translation: 'to do/make',
+                conjugations: {
+                    present: {
+                        sg: { '1': 'faciō', '2': 'facis', '3': 'facit' },
+                        pl: { '1': 'facimus', '2': 'facitis', '3': 'faciunt' }
+                    },
+                    imperfect: {
+                        sg: { '1': 'faciēbam', '2': 'faciēbās', '3': 'faciēbat' },
+                        pl: { '1': 'faciēbāmus', '2': 'faciēbātis', '3': 'faciēbant' }
+                    },
+                    perfect: {
+                        sg: { '1': 'fecī', '2': 'fecistī', '3': 'fecit' },
+                        pl: { '1': 'fecimus', '2': 'fecistis', '3': 'fecērunt' }
+                    },
+                    plusquamperfect: {
+                        sg: { '1': 'feceram', '2': 'fecerās', '3': 'fecerat' },
+                        pl: { '1': 'fecerāmus', '2': 'fecerātis', '3': 'fecerunt' }
+                    },
+                    future1: {
+                        sg: { '1': 'faciam', '2': 'faciēs', '3': 'faciet' },
+                        pl: { '1': 'faciēmus', '2': 'faciētis', '3': 'facient' }
                     }
                 }
             },
