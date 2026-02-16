@@ -1158,12 +1158,21 @@
                     // Deselect all buttons in this group first
                     btn.classList.remove('selected');
                     
-                    // Then select only the currently active button for this group
-                    if (type === 'tense' && mode1State.selected.tense === value && btn.textContent.toLowerCase().replace(' ', '') === value) {
-                        btn.classList.add('selected');
-                    } else if (type === 'person' && mode1State.selected.person === value && btn.textContent.match(/\d/)?.[0] === value) {
-                        btn.classList.add('selected');
-                    } else if (type === 'number' && mode1State.selected.number === value && ((value === 'sg' && btn.textContent === 'Singular') || (value === 'pl' && btn.textContent === 'Plural'))) {
+                    // Check if this button matches the current selection
+                    let matches = false;
+                    
+                    if (type === 'tense') {
+                        // Compare using the tenseLongNames mapping
+                        matches = tenseLongNames[value] === btn.textContent && mode1State.selected.tense === value;
+                    } else if (type === 'person') {
+                        // Compare person number (e.g., "1" from "1. Pers.")
+                        matches = btn.textContent.match(/\d/)?.[0] === value && mode1State.selected.person === value;
+                    } else if (type === 'number') {
+                        // Direct text comparison for singular/plural
+                        matches = ((value === 'sg' && btn.textContent === 'Singular') || (value === 'pl' && btn.textContent === 'Plural')) && mode1State.selected.number === value;
+                    }
+                    
+                    if (matches) {
                         btn.classList.add('selected');
                     }
                 }
