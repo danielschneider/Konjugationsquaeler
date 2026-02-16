@@ -1486,7 +1486,7 @@
             const selector = document.getElementById('verb-selector');
             selector.innerHTML = '';
             
-            const verbNames = Object.keys(verbs);
+            const verbNames = Object.keys(verbs).sort();
             verbNames.forEach(verb => {
                 const btn = document.createElement('button');
                 btn.className = 'verb-btn' + (verb === mode3CurrentVerb ? ' selected' : '');
@@ -1511,13 +1511,13 @@
             
             const verb = verbs[verbName];
             const tenses = Object.keys(verb.conjugations);
-            let html = '';
+            let html = '<div style="margin-bottom: 30px; padding: 15px; background-color: #0f3460; border-radius: 8px;"><span style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Modus / Stimme:</span> <span style="color: #6366f1; font-weight: 600; margin-left: 10px;">Indikativ Aktiv</span></div>';
             
             // Create table for each tense
             tenses.forEach(tense => {
                 html += `
                 <div style="margin-bottom: 30px;">
-                    <h3 style="color: #6366f1; margin-bottom: 12px; font-size: 1.2rem;">${tenseLongNames[tense]}</h3>
+                    <h3 style="color: #6366f1; margin-bottom: 12px; font-size: 1.2rem;">${tenseLongNames[tense]} <span style="font-size: 0.9rem; color: #aaa;">(Indikativ Aktiv)</span></h3>
                     <table class="conjugation-table">
                         <thead>
                             <tr>
