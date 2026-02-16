@@ -475,7 +475,7 @@
                     </div>
 
                     <div class="toggle-group">
-                        <div class="toggle-label">Modus / Stimme</div>
+                        <div class="toggle-label">Modus</div>
                         <div class="toggle-options">
                             <button class="toggle-btn selected" onclick="toggleSelection('mood', 'ind-act')">Indikativ Aktiv</button>
                         </div>
@@ -500,7 +500,7 @@
                         <div><span style="color: #888;">Zeit:</span> <span style="color: #fff; font-weight: 600;" id="mode2-tense">Präsens</span></div>
                         <div><span style="color: #888;">Person:</span> <span style="color: #fff; font-weight: 600;" id="mode2-person">1. Pers.</span></div>
                         <div><span style="color: #888;">Numerus:</span> <span style="color: #fff; font-weight: 600;" id="mode2-number">Singular</span></div>
-                        <div><span style="color: #888;">Modus / Stimme:</span> <span style="color: #fff; font-weight: 600;" id="mode2-mood">Indikativ Aktiv</span></div>
+                        <div><span style="color: #888;">Modus:</span> <span style="color: #fff; font-weight: 600;" id="mode2-mood">Indikativ Aktiv</span></div>
                     </div>
                 </div>
                 
@@ -1269,7 +1269,7 @@
                 if (labelText === 'Zeit') buttonType = 'tense';
                 else if (labelText === 'Person') buttonType = 'person';
                 else if (labelText === 'Numerus') buttonType = 'number';
-                else if (labelText === 'Modus / Stimme') buttonType = 'mood';
+                else if (labelText === 'Modus') buttonType = 'mood';
                 
                 // If this button is in the same group as the one being toggled
                 if (buttonType === type) {
