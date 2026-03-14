@@ -28,7 +28,7 @@ function switchMode(mode) {
 }
 
 function toggleSelection(type, value) {
-    // Don't toggle mood - it's always Indikativ Aktiv
+    // Ignore mood - handled by toggleMood
     if (type === 'mood') {
         return;
     }
@@ -38,6 +38,11 @@ function toggleSelection(type, value) {
     
     // Update button classes based on current state
     document.querySelectorAll(`.toggle-btn`).forEach(btn => {
+        // Skip mood buttons - they are handled by toggleMood
+        if (btn.hasAttribute('data-mood')) {
+            return;
+        }
+        
         const parentGroup = btn.closest('.toggle-group');
         const labelElement = parentGroup?.querySelector('.toggle-label');
         const labelText = labelElement?.textContent || '';
@@ -66,35 +71,66 @@ function toggleSelection(type, value) {
             } else if (type === 'number') {
                 // Direct text comparison for singular/plural
                 matches = ((value === 'sg' && btn.textContent === 'Singular') || (value === 'pl' && btn.textContent === 'Plural')) && mode1State.selected.number === value;
-            } else if (type === 'mood') {
-                // Mood is always selected
-                matches = btn.textContent === 'Indikativ Aktiv';
             }
             
             if (matches) {
                 btn.classList.add('selected');
             }
-        } else if (buttonType === 'mood') {
-            // Always keep mood button selected
-            btn.classList.add('selected');
         }
     });
+    
+    // Enable/disable Prüfen button based on selections
+    const allSelected = mode1State.selected.tense && 
+                        mode1State.selected.person && 
+                        mode1State.selected.number && 
+                        mode1State.selected.mood;
+    document.querySelector('.mode-1 .ok-btn').disabled = !allSelected;
+}
+
+/**
+ * Toggle a mood selection (single selection)
+ * @param {string} mood - The mood key (e.g., 'ind-akt', 'ind-pass')
+ */
+function toggleMood(mood) {
+    const btn = document.querySelector(`.toggle-btn[data-mood="${mood}"]`);
+    
+    if (!btn) return;
+    
+    // Single selection: deselect all mood buttons first, then select the clicked one
+    document.querySelectorAll('.toggle-btn[data-mood]').forEach(b => {
+        b.classList.remove('selected');
+    });
+    
+    // Select the clicked mood
+    btn.classList.add('selected');
+    mode1State.enabledMoods = [mood];
+    mode1State.selected.mood = mood;
+    
+    // Enable/disable Prüfen button based on selections
+    const allSelected = mode1State.selected.tense && 
+                        mode1State.selected.person && 
+                        mode1State.selected.number && 
+                        mode1State.selected.mood;
+    document.querySelector('.mode-1 .ok-btn').disabled = !allSelected;
 }
 
 function nextMode1() {
     mode1State.form = getRandomForm();
-    mode1State.selected = { tense: null, person: null, number: null, mood: 'ind-act' };
+    mode1State.selected = { tense: null, person: null, number: null, mood: null };
     document.getElementById('mode1-question').textContent = mode1State.form.form;
-    document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('selected'));
-    // Keep the mood button selected
+    
+    // Reset all toggle buttons
     document.querySelectorAll('.toggle-btn').forEach(btn => {
-        if (btn.textContent === 'Indikativ Aktiv') {
-            btn.classList.add('selected');
-        }
+        btn.classList.remove('selected');
     });
+    
+    // Reset enabledMoods
+    mode1State.enabledMoods = [];
+    
+    // Disable Prüfen button until all selections are made
+    document.querySelector('.mode-1 .ok-btn').disabled = true;
     document.getElementById('mode1-feedback').classList.add('hidden');
     checkInProgress = false;
-    document.querySelector('.mode-1 .ok-btn').disabled = false;
     document.getElementById('mode1-btn').textContent = 'Prüfen';
 }
 
@@ -114,10 +150,12 @@ function checkMode1() {
         return;
     }
     
+    const form = mode1State.form;
     const isCorrect = 
-        mode1State.selected.tense === mode1State.form.tense &&
-        mode1State.selected.person === mode1State.form.person &&
-        mode1State.selected.number === mode1State.form.number;
+        mode1State.selected.tense === form.tense &&
+        mode1State.selected.person === form.person &&
+        mode1State.selected.number === form.number &&
+        mode1State.selected.mood === form.mood;
 
     const feedback = document.getElementById('mode1-feedback');
     if (isCorrect) {
@@ -135,7 +173,7 @@ function checkMode1() {
         }, 1500);
     } else {
         scoreState.incorrect++;
-        const correct = `${tenseLongNames[mode1State.form.tense]}, ${personNames[mode1State.form.person]}, ${numberNames[mode1State.form.number]}`;
+        const correct = `${moodLongNames[form.mood]}, ${tenseLongNames[form.tense]}, ${personNames[form.person]}, ${numberNames[form.number]}`;
         feedback.textContent = `✗ Falsch! Korrekt: ${correct}`;
         feedback.className = 'feedback incorrect';
         mode1LastError = true;
@@ -156,6 +194,7 @@ function nextMode2() {
     document.getElementById('mode2-tense').textContent = tenseLongNames[mode2State.form.tense];
     document.getElementById('mode2-person').textContent = personNames[mode2State.form.person];
     document.getElementById('mode2-number').textContent = numberNames[mode2State.form.number];
+    document.getElementById('mode2-mood').textContent = moodLongNames[mode2State.form.mood];
     document.getElementById('mode2-input').value = '';
     document.getElementById('mode2-feedback').textContent = '';
     document.getElementById('mode2-feedback').classList.add('hidden');
@@ -238,8 +277,8 @@ function handleEnter(event) {
 
 function initMode3() {
     // Create verb selector buttons
-    const selector = document.getElementById('verb-selector');
-    selector.innerHTML = '';
+    const verbSelector = document.getElementById('verb-selector');
+    verbSelector.innerHTML = '';
     
     const verbNames = Object.keys(verbs).sort();
     verbNames.forEach(verb => {
@@ -247,7 +286,25 @@ function initMode3() {
         btn.className = 'verb-btn' + (verb === mode3CurrentVerb ? ' selected' : '');
         btn.textContent = verb;
         btn.onclick = () => showConjugationTable(verb);
-        selector.appendChild(btn);
+        verbSelector.appendChild(btn);
+    });
+    
+    // Create mood selector buttons
+    const moodSelector = document.getElementById('mood-selector');
+    moodSelector.innerHTML = '';
+    
+    moodKeys.forEach(mood => {
+        const btn = document.createElement('button');
+        btn.className = 'mood-btn' + (mood === mode3CurrentMood ? ' selected' : '');
+        btn.textContent = moodLongNames[mood];
+        btn.onclick = () => {
+            mode3CurrentMood = mood;
+            // Update selected class
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            showConjugationTable(mode3CurrentVerb);
+        };
+        moodSelector.appendChild(btn);
     });
     
     showConjugationTable(mode3CurrentVerb);
@@ -256,7 +313,7 @@ function initMode3() {
 function showConjugationTable(verbName) {
     mode3CurrentVerb = verbName;
     
-    // Update selected button
+    // Update selected verb button
     document.querySelectorAll('.verb-btn').forEach(btn => {
         btn.classList.remove('selected');
         if (btn.textContent === verbName) {
@@ -265,14 +322,44 @@ function showConjugationTable(verbName) {
     });
     
     const verb = verbs[verbName];
-    const tenses = Object.keys(verb.conjugations);
-    let html = '<div style="margin-bottom: 30px; padding: 15px; background-color: #0f3460; border-radius: 8px;"><span style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Modus:</span> <span style="color: #6366f1; font-weight: 600; margin-left: 10px;">Indikativ Aktiv</span></div>';
+    const [moodType, voice] = mode3CurrentMood.split('-');
+    
+    let html = '<div style="margin-bottom: 30px; padding: 15px; background-color: #0f3460; border-radius: 8px;"><span style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Modus:</span> <span style="color: #6366f1; font-weight: 600; margin-left: 10px;">' + moodLongNames[mode3CurrentMood] + '</span></div>';
+    
+    // Try to get tenses from new format first
+    let tenses = [];
+    if (verb.conjugations && verb.conjugations[moodType] && verb.conjugations[moodType][voice]) {
+        tenses = Object.keys(verb.conjugations[moodType][voice]);
+    } else if (mode3CurrentMood === 'ind-akt' && verb.conjugations) {
+        // Fallback to old format for ind-akt
+        tenses = Object.keys(verb.conjugations);
+    }
+    
+    if (tenses.length === 0) {
+        html += '<div style="color: #888; padding: 20px;">Keine Konjugationsdaten für diesen Modus verfügbar.</div>';
+        document.getElementById('table-container').innerHTML = html;
+        return;
+    }
     
     // Create table for each tense
     tenses.forEach(tense => {
+        let tenseData = null;
+        
+        // Get data from new format
+        if (verb.conjugations && verb.conjugations[moodType] && 
+            verb.conjugations[moodType][voice] && 
+            verb.conjugations[moodType][voice][tense]) {
+            tenseData = verb.conjugations[moodType][voice][tense];
+        } else if (mode3CurrentMood === 'ind-akt' && verb.conjugations && verb.conjugations[tense]) {
+            // Fallback to old format
+            tenseData = verb.conjugations[tense];
+        }
+        
+        if (!tenseData) return;
+        
         html += `
         <div style="margin-bottom: 30px;">
-            <h3 style="color: #6366f1; margin-bottom: 12px; font-size: 1.2rem;">${tenseLongNames[tense]} <span style="font-size: 0.9rem; color: #aaa;">(Indikativ Aktiv)</span></h3>
+            <h3 style="color: #6366f1; margin-bottom: 12px; font-size: 1.2rem;">${tenseLongNames[tense]} <span style="font-size: 0.9rem; color: #aaa;">(${moodLongNames[mode3CurrentMood]})</span></h3>
             <table class="conjugation-table">
                 <thead>
                     <tr>
@@ -284,18 +371,18 @@ function showConjugationTable(verbName) {
                 <tbody>
                     <tr>
                         <td>${personNames['1']}</td>
-                        <td><strong>${verb.conjugations[tense].sg['1']}</strong></td>
-                        <td><strong>${verb.conjugations[tense].pl['1']}</strong></td>
+                        <td><strong>${tenseData.sg?.['1'] || '-'}</strong></td>
+                        <td><strong>${tenseData.pl?.['1'] || '-'}</strong></td>
                     </tr>
                     <tr>
                         <td>${personNames['2']}</td>
-                        <td><strong>${verb.conjugations[tense].sg['2']}</strong></td>
-                        <td><strong>${verb.conjugations[tense].pl['2']}</strong></td>
+                        <td><strong>${tenseData.sg?.['2'] || '-'}</strong></td>
+                        <td><strong>${tenseData.pl?.['2'] || '-'}</strong></td>
                     </tr>
                     <tr>
                         <td>${personNames['3']}</td>
-                        <td><strong>${verb.conjugations[tense].sg['3']}</strong></td>
-                        <td><strong>${verb.conjugations[tense].pl['3']}</strong></td>
+                        <td><strong>${tenseData.sg?.['3'] || '-'}</strong></td>
+                        <td><strong>${tenseData.pl?.['3'] || '-'}</strong></td>
                     </tr>
                 </tbody>
             </table>

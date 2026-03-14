@@ -4,7 +4,8 @@
 let mode1State = {
     verb: 'amare',
     form: null,
-    selected: { tense: null, person: null, number: null, mood: 'ind-act' }
+    selected: { tense: null, person: null, number: null, mood: null },
+    enabledMoods: []  // No mood pre-selected
 };
 
 // Score tracking
@@ -34,3 +35,4 @@ let mode2State = {
 
 // State for Mode 3 (Conjugation table)
 let mode3CurrentVerb = 'amare';
+let mode3CurrentMood = 'ind-akt';

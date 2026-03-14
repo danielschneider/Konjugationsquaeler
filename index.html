@@ -58,7 +58,12 @@
                     <div class="toggle-group">
                         <div class="toggle-label">Modus</div>
                         <div class="toggle-options">
-                            <button class="toggle-btn selected" onclick="toggleSelection('mood', 'ind-act')">Indikativ Aktiv</button>
+                            <button class="toggle-btn" data-mood="ind-akt" onclick="toggleMood('ind-akt')">Indikativ Aktiv</button>
+                            <button class="toggle-btn" data-mood="ind-pass" onclick="toggleMood('ind-pass')">Indikativ Passiv</button>
+                            <button class="toggle-btn" data-mood="imp-akt" onclick="toggleMood('imp-akt')">Imperativ Aktiv</button>
+                            <button class="toggle-btn" data-mood="imp-pass" onclick="toggleMood('imp-pass')">Imperativ Passiv</button>
+                            <button class="toggle-btn" data-mood="konj-akt" onclick="toggleMood('konj-akt')">Konjunktiv Aktiv</button>
+                            <button class="toggle-btn" data-mood="konj-pass" onclick="toggleMood('konj-pass')">Konjunktiv Passiv</button>
                         </div>
                     </div>
                 </div>
@@ -103,6 +108,10 @@
                     <div style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 15px;">Wähle ein Verb:</div>
                     <div class="verb-selector" id="verb-selector"></div>
                 </div>
+                <div style="margin-bottom: 25px;">
+                    <div style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 15px;">Wähle einen Modus:</div>
+                    <div class="mood-selector" id="mood-selector"></div>
+                </div>
                 <div id="table-container">
                     <!-- Table will be generated here -->
                 </div>
@@ -111,6 +120,10 @@
     </div>
 
     <!-- JavaScript files (order matters!) -->
+    <script src="js/data/a-verben.js"></script>
+    <script src="js/data/e-verben.js"></script>
+    <script src="js/data/i-verben.js"></script>
+    <script src="js/data/irregular.js"></script>
     <script src="js/vocabularies.js"></script>
     <script src="js/constants.js"></script>
     <script src="js/helpers.js"></script>

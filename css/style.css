@@ -198,7 +198,7 @@ h1 {
 
 .toggle-options {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 6px;
 }
 
@@ -212,6 +212,7 @@ h1 {
     transition: all 0.2s ease;
     font-size: 0.9rem;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .toggle-btn.selected {
@@ -267,6 +268,14 @@ h1 {
     background-color: #4f46e5;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.ok-btn:disabled {
+    background-color: #3a3a5c;
+    color: #6b6b8a;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .next-btn {
@@ -370,6 +379,30 @@ h1 {
 }
 
 .verb-btn.selected {
+    background-color: #6366f1;
+    color: #fff;
+    border-color: #6366f1;
+}
+
+/* Mood selector buttons (Mode 3) */
+.mood-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mood-btn {
+    padding: 8px 14px;
+    background-color: #0f3460;
+    border: 2px solid #16213e;
+    color: #a0a0a0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+}
+
+.mood-btn.selected {
     background-color: #6366f1;
     color: #fff;
     border-color: #6366f1;
