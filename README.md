@@ -1,87 +1,122 @@
-# Konjugationsquäler
+# Konjugationsquäler - Latin Verb Conjugation Trainer
 
-Ein interaktives Trainingstool zur Verbesserung von lateinischen Verbkonjugationen im Indikativ Aktiv.
+A web application for practicing Latin verb conjugations in German.
 
-## 📚 Features
+## Project Structure
 
-**Konjugationsquäler** bietet drei verschiedene Trainingsmodi:
+```
+LatinMaster/
+├── index.html          # Main HTML file
+├── css/
+│   └── style.css       # All styles
+├── js/
+│   ├── vocabularies.js # Latin verb database (easy to edit!)
+│   ├── constants.js    # Labels and display names
+│   ├── helpers.js      # Utility functions
+│   ├── state.js       # Application state
+│   └── app.js         # Main application logic
+└── README.md           # This file
+```
 
-### Modus 1: Form erraten
-- Dem Benutzer wird eine konjugierte lateinische Form angezeigt
-- Der Benutzer muss die **Zeit**, **Person** und **Numerus** der Form korrekt bestimmen
-- Sofortiges Feedback zur Antwort
-- Automatisches Fortschreiten bei korrekten Antworten
+## How to Add New Verbs
 
-### Modus 2: Form eingeben
-- Der Benutzer sieht ein **Infinitiv**, **Zeit**, **Person**, **Numerus** und **Modus/Stimme**
-- Die korrekte konjugierte Form muss eingegeben werden
-- Makronen sind optional
-- Hilfreich für das aktive Abrufen von Konjugationen
-- Tipps bei falschen Antworten
+The verb vocabulary is stored in [`js/vocabularies.js`](js/vocabularies.js). To add a new verb, follow this pattern:
 
-### Modus 3: Konjugationstabelle
-- Alle Konjugationen eines Verbs im **Indikativ Aktiv** anschauen
-- Alphabetisch sortierte Verbliste
-- Übersichtliche Tabellenform mit allen Tempus und Personen
-- Perfekt zum Lernen und Nachschlagen
+```javascript
+newverb: {
+    infinitive: 'newverb',
+    translation: 'English translation',
+    conjugations: {
+        present: {
+            sg: { '1': 'form', '2': 'form', '3': 'form' },
+            pl: { '1': 'form', '2': 'form', '3': 'form' }
+        },
+        imperfect: {
+            sg: { '1': 'form', '2': 'form', '3': 'form' },
+            pl: { '1': 'form', '2': 'form', '3': 'form' }
+        },
+        perfect: {
+            sg: { '1': 'form', '2': 'form', '3': 'form' },
+            pl: { '1': 'form', '2': 'form', '3': 'form' }
+        },
+        plusquamperfect: {
+            sg: { '1': 'form', '2': 'form', '3': 'form' },
+            pl: { '1': 'form', '2': 'form', '3': 'form' }
+        },
+        future1: {
+            sg: { '1': 'form', '2': 'form', '3': 'form' },
+            pl: { '1': 'form', '2': 'form', '3': 'form' }
+        }
+    }
+}
+```
 
-## 🎯 Unterstützte Verben
+### Example: Adding "portare" (to carry)
 
-Das Tool enthält folgende lateinische Verben:
+```javascript
+portare: {
+    infinitive: 'portare',
+    translation: 'to carry',
+    conjugations: {
+        present: {
+            sg: { '1': 'portō', '2': 'portās', '3': 'portat' },
+            pl: { '1': 'portāmus', '2': 'portātis', '3': 'portant' }
+        },
+        imperfect: {
+            sg: { '1': 'portābam', '2': 'portābās', '3': 'portābat' },
+            pl: { '1': 'portābāmus', '2': 'portābātis', '3': 'portābant' }
+        },
+        perfect: {
+            sg: { '1': 'portāvī', '2': 'portāvistī', '3': 'portāvit' },
+            pl: { '1': 'portāvimus', '2': 'portāvistis', '3': 'portāvērunt' }
+        },
+        plusquamperfect: {
+            sg: { '1': 'portāveram', '2': 'portāverās', '3': 'portāverat' },
+            pl: { '1': 'portāverāmus', '2': 'portāverātis', '3': 'portāverant' }
+        },
+        future1: {
+            sg: { '1': 'portābō', '2': 'portābis', '3': 'portābit' },
+            pl: { '1': 'portābimus', '2': 'portābitis', '3': 'portābunt' }
+        }
+    }
+}
+```
 
-- amare (1. Konjugation - lieben)
-- audire (4. Konjugation - hören)
-- credere (2. Konjugation - glauben)
-- dire (3. Konjugation - sagen)
-- esse (unregelmäßig - sein)
-- habere (2. Konjugation - haben)
-- imperare (1. Konjugation - befehlen)
-- interficere (3. Konjugation - töten)
-- iubere (2. Konjugation - befehlen)
-- laudare (1. Konjugation - loben)
-- mittere (3. Konjugation - senden)
-- nolle (unregelmäßig - nicht wollen)
-- perdere (3. Konjugation - verlieren)
-- superare (1. Konjugation - überwinden)
-- velle (unregelmäßig - wollen)
-- videre (2. Konjugation - sehen)
-- vivere (3. Konjugation - leben)
+## Available Tenses
 
-## ⏱️ Unterstützte Tempora
+- **present** - Präsens
+- **imperfect** - Imperfekt
+- **perfect** - Perfekt
+- **plusquamperfect** - Plusquamperfekt
+- **future1** - Futur I
 
-- Präsens
-- Imperfekt
-- Perfekt
-- Plusquamperfekt
-- Futur 1
+## Macrons Support
 
-## 📊 Punktesystem
+The app supports Latin macrons (ā, ē, ī, ō, ū). When checking answers in "Form eingeben" mode, both versions with and without macrons are accepted.
 
-- ✓ Richtige Antworten werden gezählt
-- ✗ Falsche Antworten werden gezählt
-- Echtzeit-Anzeige des Fortschritts
+## Features
 
-## 🚀 Verwendung
+1. **Form erraten** - Guess the correct tense, person, and number from a given verb form
+2. **Form eingeben** - Type the correct verb form given the infinitive and grammatical features
+3. **Tabelle** - View complete conjugation tables for all verbs
 
-1. **Modus auswählen** - Klicke auf einen der drei Modi oben
-2. **Trainieren** - Folge den Anweisungen des ausgewählten Modus
-3. **Fortschritt tracken** - Beobachte deine Punkte in der Anzeige
-4. **Üben** - Nutze alle Modi, um dein Wissen zu festigen
+## Running the Application
 
-## 💡 Tipps zum Lernen
+Simply open `index.html` in a web browser. No build process or server required.
 
-- Starten Sie mit **Modus 1** (Form erraten), um die Formen zu erkennen
-- Nutzen Sie **Modus 2** (Form eingeben), um die Formen aktiv zu reproduzieren
-- Verwenden Sie **Modus 3** (Tabelle), um schnelle Nachschlagemöglichkeiten zu haben
-- Makronen (Längezeichen) sind optional - konzentrieren Sie sich auf die Formenbildung
+## Browser Support
 
-## 🔮 Zukünftige Erweiterungen
+- Chrome/Edge (recommended)
+- Firefox
+- Safari
 
-- Passive Modi (Indikativ Passiv)
-- Weitere Verbformen und Konjugationen
-- Benutzer-Statistiken und Fortschrittsverfolgung
-- Zusätzliche Übungsmodi
+## File Descriptions
 
-## 📝 Lizenz
-
-Open Source - frei zum Lernen und Verbessern verfügbar. 
+| File | Description |
+|------|-------------|
+| [`js/vocabularies.js`](js/vocabularies.js) | Verb database - **edit this to add/remove verbs** |
+| [`js/constants.js`](js/constants.js) | Label translations (German) |
+| [`js/helpers.js`](js/helpers.js) | Utility functions (macron removal, random form generation) |
+| [`js/state.js`](js/state.js) | Application state variables |
+| [`js/app.js`](js/app.js) | Main application logic and event handlers |
+| [`css/style.css`](css/style.css) | All CSS styles |
