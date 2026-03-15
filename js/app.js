@@ -7,6 +7,9 @@ function initMode1MoodButtons() {
     const moodContainer = document.getElementById('mode1-mood-options');
     if (!moodContainer) return;
     
+    // Clear existing buttons first
+    moodContainer.innerHTML = '';
+    
     const activeMoods = getActiveMoodKeys();
     
     activeMoods.forEach(mood => {
@@ -397,10 +400,76 @@ function showConjugationTable(verbName) {
     document.getElementById('table-container').innerHTML = html;
 }
 
+// ==================== SETTINGS OVERLAY ====================
+
+function openSettings() {
+    const overlay = document.getElementById('settings-overlay');
+    const checkboxContainer = document.getElementById('mood-checkboxes');
+    
+    // Get current settings
+    const settings = getMoodSettings();
+    
+    // Generate checkboxes
+    checkboxContainer.innerHTML = '';
+    moodKeys.forEach(mood => {
+        const item = document.createElement('div');
+        item.className = 'checkbox-item';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = 'mood-' + mood.key;
+        checkbox.checked = settings[mood.key] || false;
+        
+        const label = document.createElement('label');
+        label.htmlFor = 'mood-' + mood.key;
+        label.textContent = moodLongNames[mood.key];
+        
+        item.appendChild(checkbox);
+        item.appendChild(label);
+        checkboxContainer.appendChild(item);
+    });
+    
+    overlay.classList.remove('hidden');
+}
+
+function closeSettings() {
+    document.getElementById('settings-overlay').classList.add('hidden');
+}
+
+function saveSettings() {
+    const settings = {};
+    
+    moodKeys.forEach(mood => {
+        const checkbox = document.getElementById('mood-' + mood.key);
+        settings[mood.key] = checkbox.checked;
+    });
+    
+    // Save to cookie
+    saveMoodSettings(settings);
+    
+    // Update moodKeys
+    initializeMoodKeysFromSettings();
+    
+    // Reinitialize mood buttons
+    initMode1MoodButtons();
+    
+    // Close overlay
+    closeSettings();
+    
+    // Reload current mode
+    const currentMode = document.querySelector('.mode-1.active') ? 1 : 
+                       document.querySelector('.mode-2.active') ? 2 : 
+                       document.querySelector('.mode-3.active') ? 3 : 1;
+    switchMode(currentMode);
+}
+
 // ==================== INITIALIZATION ====================
 
 // Initialize the app when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize mood keys from settings (or defaults)
+    initializeMoodKeysFromSettings();
+    
     initMode1MoodButtons();
     nextMode1();
 });
