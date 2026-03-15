@@ -3,7 +3,7 @@
  * Pattern: -ire endings
  */
 
-const iVerbs = {
+window.iVerbs = {
     audire: {
         infinitive: 'audire',
         translation: 'to hear',

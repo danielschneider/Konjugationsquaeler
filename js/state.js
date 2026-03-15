@@ -35,4 +35,3 @@ let mode2State = {
 
 // State for Mode 3 (Conjugation table)
 let mode3CurrentVerb = 'amare';
-let mode3CurrentMood = 'ind-akt';

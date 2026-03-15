@@ -2,6 +2,23 @@
 
 // ==================== MODE 1: GUESS THE FORM ====================
 
+// Initialize mood buttons based on active moods
+function initMode1MoodButtons() {
+    const moodContainer = document.getElementById('mode1-mood-options');
+    if (!moodContainer) return;
+    
+    const activeMoods = getActiveMoodKeys();
+    
+    activeMoods.forEach(mood => {
+        const btn = document.createElement('button');
+        btn.className = 'toggle-btn';
+        btn.setAttribute('data-mood', mood);
+        btn.onclick = () => toggleMood(mood);
+        btn.textContent = moodLongNames[mood];
+        moodContainer.appendChild(btn);
+    });
+}
+
 function switchMode(mode) {
     document.querySelector('.mode-1').classList.remove('active');
     document.querySelector('.mode-2').classList.remove('active');
@@ -117,6 +134,13 @@ function toggleMood(mood) {
 function nextMode1() {
     mode1State.form = getRandomForm();
     mode1State.selected = { tense: null, person: null, number: null, mood: null };
+    
+    // Handle null form gracefully
+    if (!mode1State.form) {
+        document.getElementById('mode1-question').textContent = 'Error: No form available';
+        return;
+    }
+    
     document.getElementById('mode1-question').textContent = mode1State.form.form;
     
     // Reset all toggle buttons
@@ -289,24 +313,6 @@ function initMode3() {
         verbSelector.appendChild(btn);
     });
     
-    // Create mood selector buttons
-    const moodSelector = document.getElementById('mood-selector');
-    moodSelector.innerHTML = '';
-    
-    moodKeys.forEach(mood => {
-        const btn = document.createElement('button');
-        btn.className = 'mood-btn' + (mood === mode3CurrentMood ? ' selected' : '');
-        btn.textContent = moodLongNames[mood];
-        btn.onclick = () => {
-            mode3CurrentMood = mood;
-            // Update selected class
-            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            showConjugationTable(mode3CurrentVerb);
-        };
-        moodSelector.appendChild(btn);
-    });
-    
     showConjugationTable(mode3CurrentVerb);
 }
 
@@ -322,72 +328,70 @@ function showConjugationTable(verbName) {
     });
     
     const verb = verbs[verbName];
-    const [moodType, voice] = mode3CurrentMood.split('-');
+    let html = '';
     
-    let html = '<div style="margin-bottom: 30px; padding: 15px; background-color: #0f3460; border-radius: 8px;"><span style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Modus:</span> <span style="color: #6366f1; font-weight: 600; margin-left: 10px;">' + moodLongNames[mode3CurrentMood] + '</span></div>';
-    
-    // Try to get tenses from new format first
-    let tenses = [];
-    if (verb.conjugations && verb.conjugations[moodType] && verb.conjugations[moodType][voice]) {
-        tenses = Object.keys(verb.conjugations[moodType][voice]);
-    } else if (mode3CurrentMood === 'ind-akt' && verb.conjugations) {
-        // Fallback to old format for ind-akt
-        tenses = Object.keys(verb.conjugations);
-    }
-    
-    if (tenses.length === 0) {
-        html += '<div style="color: #888; padding: 20px;">Keine Konjugationsdaten für diesen Modus verfügbar.</div>';
-        document.getElementById('table-container').innerHTML = html;
-        return;
-    }
-    
-    // Create table for each tense
-    tenses.forEach(tense => {
-        let tenseData = null;
+    // Loop over all moods
+    moodKeys.forEach(moodObj => {
+        const mood = moodObj.key;
+        const parts = mood.split('-');
+        const moodType = parts[0];
+        const voice = parts[1];
         
-        // Get data from new format
-        if (verb.conjugations && verb.conjugations[moodType] && 
-            verb.conjugations[moodType][voice] && 
-            verb.conjugations[moodType][voice][tense]) {
-            tenseData = verb.conjugations[moodType][voice][tense];
-        } else if (mode3CurrentMood === 'ind-akt' && verb.conjugations && verb.conjugations[tense]) {
-            // Fallback to old format
-            tenseData = verb.conjugations[tense];
+        // Direct mapping
+        let fullMood = 'indikativ';
+        if (moodType === 'imp') fullMood = 'imperativ';
+        if (moodType === 'kon') fullMood = 'konjunktiv';
+        
+        let fullVoice = 'passiv';
+        if (voice === 'akt') fullVoice = 'aktiv';
+        
+        html += '<div style="margin-bottom: 30px; padding: 15px; background-color: #0f3460; border-radius: 8px;"><span style="font-size: 0.9rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Modus:</span> <span style="color: #6366f1; font-weight: 600; margin-left: 10px;">' + moodLongNames[mood] + '</span></div>';
+        
+        if (!verb.conjugations || !verb.conjugations[fullMood] || !verb.conjugations[fullMood][fullVoice]) {
+            html += '<div style="color: #888; padding: 20px;">Keine Konjugationsdaten für diesen Modus verfügbar.</div>';
+            return;
         }
         
-        if (!tenseData) return;
+        const tenses = Object.keys(verb.conjugations[fullMood][fullVoice]);
         
-        html += `
-        <div style="margin-bottom: 30px;">
-            <h3 style="color: #6366f1; margin-bottom: 12px; font-size: 1.2rem;">${tenseLongNames[tense]} <span style="font-size: 0.9rem; color: #aaa;">(${moodLongNames[mode3CurrentMood]})</span></h3>
-            <table class="conjugation-table">
-                <thead>
-                    <tr>
-                        <th style="width: 25%;">Person</th>
-                        <th style="width: 25%;">Singular</th>
-                        <th style="width: 25%;">Plural</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>${personNames['1']}</td>
-                        <td><strong>${tenseData.sg?.['1'] || '-'}</strong></td>
-                        <td><strong>${tenseData.pl?.['1'] || '-'}</strong></td>
-                    </tr>
-                    <tr>
-                        <td>${personNames['2']}</td>
-                        <td><strong>${tenseData.sg?.['2'] || '-'}</strong></td>
-                        <td><strong>${tenseData.pl?.['2'] || '-'}</strong></td>
-                    </tr>
-                    <tr>
-                        <td>${personNames['3']}</td>
-                        <td><strong>${tenseData.sg?.['3'] || '-'}</strong></td>
-                        <td><strong>${tenseData.pl?.['3'] || '-'}</strong></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        `;
+        // Create table for each tense
+        tenses.forEach(tense => {
+            const tenseData = verb.conjugations[fullMood][fullVoice][tense];
+            
+            if (!tenseData) return;
+            
+            html += `
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #6366f1; margin-bottom: 12px; font-size: 1.2rem;">${tenseLongNames[tense]} <span style="font-size: 0.9rem; color: #aaa;">(${moodLongNames[mood]})</span></h3>
+                <table class="conjugation-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Person</th>
+                            <th style="width: 25%;">Singular</th>
+                            <th style="width: 25%;">Plural</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${personNames['1']}</td>
+                            <td><strong>${tenseData.sg?.['1'] || '-'}</strong></td>
+                            <td><strong>${tenseData.pl?.['1'] || '-'}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>${personNames['2']}</td>
+                            <td><strong>${tenseData.sg?.['2'] || '-'}</strong></td>
+                            <td><strong>${tenseData.pl?.['2'] || '-'}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>${personNames['3']}</td>
+                            <td><strong>${tenseData.sg?.['3'] || '-'}</strong></td>
+                            <td><strong>${tenseData.pl?.['3'] || '-'}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `;
+        });
     });
     
     document.getElementById('table-container').innerHTML = html;
@@ -397,5 +401,6 @@ function showConjugationTable(verbName) {
 
 // Initialize the app when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    initMode1MoodButtons();
     nextMode1();
 });

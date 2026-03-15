@@ -3,7 +3,7 @@
  * Verbs that don't follow regular conjugation patterns
  */
 
-const irregularVerbs = {
+window.irregularVerbs = {
     // ==================== SUMMEI VERBS (esse, velle, nolle, posse) ====================
     
     esse: {

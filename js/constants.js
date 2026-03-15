@@ -17,7 +17,19 @@ const moodLongNames = {
     'konj-pass': 'Konjunktiv Passiv'
 };
 
-const moodKeys = ['ind-akt'];
+const moodKeys = [
+    { key: 'ind-akt', active: false },
+    { key: 'ind-pass', active: true },
+    { key: 'imp-akt', active: false },
+    { key: 'imp-pass', active: false},
+    { key: 'konj-akt', active: false},
+    { key: 'konj-pass', active: false }
+];
+
+// Get only active mood keys as array of strings
+function getActiveMoodKeys() {
+    return moodKeys.filter(mood => mood.active).map(mood => mood.key);
+}
 // Tenses available for each mood
 const moodTenses = {
     'ind-akt': ['present', 'imperfect', 'perfect', 'plusquamperfect', 'future1'],

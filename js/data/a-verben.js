@@ -3,7 +3,7 @@
  * Pattern: -are endings
  */
 
-const aVerbs = {
+window.aVerbs = {
     amare: {
         infinitive: 'amare',
         translation: 'to love',

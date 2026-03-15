@@ -106,12 +106,13 @@ function getConjugationData(verb, moodType, voice, tense) {
         return null;
     }
     
-    // Map mood codes to full names
-    const moodMap = { 'ind': 'indikativ', 'imp': 'imperativ', 'kon': 'konjunktiv' };
-    const voiceMap = { 'akt': 'aktiv', 'pas': 'passiv' };
+    // Direct mapping - avoid object lookup issues
+    let fullMood = 'indikativ';
+    if (moodType === 'imp') fullMood = 'imperativ';
+    if (moodType === 'kon') fullMood = 'konjunktiv';
     
-    const fullMood = moodMap[moodType] || moodType;
-    const fullVoice = voiceMap[voice] || voice;
+    let fullVoice = 'passiv';
+    if (voice === 'akt') fullVoice = 'aktiv';
     
     if (!verb.conjugations[fullMood]) {
         return null;
@@ -149,21 +150,52 @@ function removeMacrons(text) {
  * @returns {Object} - Object containing verb, tense, number, person, mood, and form
  */
 function getRandomForm() {
-    const verbNames = Object.keys(verbs);
-    const randomVerb = verbNames[Math.floor(Math.random() * verbNames.length)];
+    // Get enabled moods from state, or default to first active mood
+    const activeMoods = getActiveMoodKeys();
+    // FIX: Use activeMoods as default, not hardcoded 'ind-akt'
+    const enabledMoods = mode1State.enabledMoods.length > 0 ? mode1State.enabledMoods : (activeMoods.length > 0 ? activeMoods : ['ind-akt']);
     
-    // Get enabled moods from state, or default to ind-akt
-    const enabledMoods = mode1State.enabledMoods || ['ind-akt'];
+    // Filter verbs that have conjugations for at least one of the enabled moods
+    const availableVerbs = Object.keys(verbs).filter(verbName => {
+        const verb = verbs[verbName];
+        return enabledMoods.some(mood => {
+            const parts = mood.split('-');
+            const moodType = parts[0];
+            const voice = parts[1];
+            
+            // Direct mapping - avoid object lookup issues
+            let fullMood = 'indikativ';
+            if (moodType === 'imp') fullMood = 'imperativ';
+            if (moodType === 'kon') fullMood = 'konjunktiv';
+            
+            let fullVoice = 'passiv';
+            if (voice === 'akt') fullVoice = 'aktiv';
+            
+            return verb.conjugations && verb.conjugations[fullMood] && verb.conjugations[fullMood][fullVoice];
+        });
+    });
     
-    // Try to find a form from enabled moods
+    if (availableVerbs.length === 0) {
+        // Fallback: use all active moods
+        const verbNames = Object.keys(verbs);
+        if (verbNames.length === 0) {
+            return null;
+        }
+        const randomVerb = verbNames[Math.floor(Math.random() * verbNames.length)];
+        return getFormFromMoods(randomVerb, activeMoods);
+    }
+    
+    const randomVerb = availableVerbs[Math.floor(Math.random() * availableVerbs.length)];
+    
+    // Get a form from the enabled moods
     const result = getFormFromMoods(randomVerb, enabledMoods);
     
     if (result) {
         return result;
     }
     
-    // Fallback: try all moods
-    return getFormFromMoods(randomVerb, moodKeys);
+    // Fallback: try all active moods
+    return getFormFromMoods(randomVerb, activeMoods);
 }
 
 /**
@@ -173,7 +205,9 @@ function getFormFromMoods(verbName, moods) {
     const verb = verbs[verbName];
     
     for (const mood of moods) {
-        const [moodType, voice] = mood.split('-');
+        const parts = mood.split('-');
+        const moodType = parts[0];
+        const voice = parts[1];
         const tenses = moodTenses[mood] || ['present'];
         
         for (const tense of tenses) {
@@ -189,15 +223,19 @@ function getFormFromMoods(verbName, moods) {
                 
                 const randomPerson = persons[Math.floor(Math.random() * persons.length)];
                 
-                // Map back to full names for display
-                const moodMap = { 'ind': 'indikativ', 'imp': 'imperativ', 'kon': 'konjunktiv' };
-                const voiceMap = { 'akt': 'aktiv', 'pas': 'passiv' };
+                // Direct mapping for display
+                let moodTypeName = 'indikativ';
+                if (moodType === 'imp') moodTypeName = 'imperativ';
+                if (moodType === 'kon') moodTypeName = 'konjunktiv';
+                
+                let voiceName = 'passiv';
+                if (voice === 'akt') voiceName = 'aktiv';
                 
                 return {
                     verb: verbName,
                     mood: mood,
-                    moodType: moodMap[moodType] || moodType,
-                    voice: voiceMap[voice] || voice,
+                    moodType: moodTypeName,
+                    voice: voiceName,
                     tense: tense,
                     number: randomNumber,
                     person: randomPerson,

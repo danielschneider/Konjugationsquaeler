@@ -3,7 +3,7 @@
  * Pattern: -ere endings (long e)
  */
 
-const eVerbs = {
+window.eVerbs = {
     habere: {
         infinitive: 'habere',
         translation: 'to have',

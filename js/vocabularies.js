@@ -45,7 +45,7 @@
 const verbs = {};
 
 // Combine all verb data
-Object.assign(verbs, typeof aVerbs !== 'undefined' ? aVerbs : {});
-Object.assign(verbs, typeof eVerbs !== 'undefined' ? eVerbs : {});
-Object.assign(verbs, typeof iVerbs !== 'undefined' ? iVerbs : {});
-Object.assign(verbs, typeof irregularVerbs !== 'undefined' ? irregularVerbs : {});
+Object.assign(verbs, typeof window.aVerbs !== 'undefined' ? window.aVerbs : {});
+Object.assign(verbs, typeof window.eVerbs !== 'undefined' ? window.eVerbs : {});
+Object.assign(verbs, typeof window.iVerbs !== 'undefined' ? window.iVerbs : {});
+Object.assign(verbs, typeof window.irregularVerbs !== 'undefined' ? window.irregularVerbs : {});
